@@ -1,0 +1,525 @@
+
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>AI 수업 시뮬레이션 대본 큐카드</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          --primary: #3b82f6;
+          --text-main: #1e293b;
+          --bg-main: #f8fafc;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: 'Inter', 'Outfit', sans-serif;
+          background: #0f172a;
+          color: var(--text-main);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          overflow: hidden;
+        }
+        .presentation-container {
+          width: 90%;
+          max-width: 900px;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          border-radius: 20px;
+          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+          padding: 40px;
+          min-height: 520px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .slide {
+          display: none;
+          flex-direction: column;
+          flex: 1;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+          max-height: 420px;
+          overflow-y: auto;
+          padding-right: 4px;
+          padding-top: 15px;
+        }
+        .slide.active {
+          display: flex;
+          opacity: 1;
+        }
+        .binder-holes {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .hole {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          border: 1px solid #94a3b8;
+        }
+        .slide-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border-bottom: 2px solid #e2e8f0;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+        }
+        .badge {
+          padding: 4px 14px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+        }
+        .slide-title {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #0f172a;
+        }
+        .quote-card {
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px 24px;
+          margin-bottom: 20px;
+          position: relative;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+        }
+        .quote-label {
+          position: absolute;
+          top: -10px;
+          left: 20px;
+          background: #f8fafc;
+          padding: 0 8px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #64748b;
+        }
+        .quote-content {
+          font-size: 1.05rem;
+          font-weight: 600;
+          color: #334155;
+          line-height: 1.6;
+          font-style: italic;
+          white-space: pre-wrap;
+        }
+        .grid-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          flex: 1;
+        }
+        .grid-box {
+          border-radius: 10px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .box-1 { background: #f0f9ff; border: 1px solid #e0f2fe; }
+        .box-2 { background: #ecfdf5; border: 1px solid #dcfce7; }
+        .box-3 { background: #fffbeb; border: 1px solid #fef3c7; }
+        .box-4 { background: #faf5ff; border: 1px solid #f3e8ff; }
+        
+        .box-title {
+          font-weight: 700;
+          font-size: 0.88rem;
+          margin-bottom: 8px;
+          padding-bottom: 4px;
+        }
+        .title-1 { color: #0369a1; border-bottom: 1px solid #bae6fd; }
+        .title-2 { color: #15803d; border-bottom: 1px solid #bbf7d0; }
+        .title-3 { color: #b45309; border-bottom: 1px solid #fde68a; }
+        .title-4 { color: #6b21a8; border-bottom: 1px solid #e9d5ff; }
+
+        .box-content {
+          font-size: 0.85rem;
+          line-height: 1.5;
+          overflow-y: auto;
+          flex: 1;
+          white-space: pre-wrap;
+        }
+        .box-content div { margin-bottom: 4px; }
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 0.78rem;
+        }
+        th {
+          background: #f8fafc;
+          border-bottom: 1.5px solid #e2e8f0;
+          padding: 10px;
+          font-weight: 700;
+          color: #475569;
+        }
+        td {
+          padding: 10px;
+          color: #475569;
+          border-bottom: 1px solid #f1f5f9;
+          background: white;
+        }
+        
+        .controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid #e2e8f0;
+          padding-top: 20px;
+          margin-top: 20px;
+        }
+        button.btn {
+          padding: 8px 18px;
+          background: #ffffff;
+          color: #334155;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.2s;
+        }
+        button.btn:disabled {
+          background: #e2e8f0;
+          color: #94a3b8;
+          cursor: not-allowed;
+        }
+        button.btn-next {
+          background: var(--primary);
+          color: white;
+          border: none;
+        }
+        .dots {
+          display: flex;
+          gap: 8px;
+        }
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .dot.active {
+          width: 12px;
+          background: var(--primary);
+        }
+        /* Font size customization */
+        font[size="2"] { font-size: 0.8rem !important; }
+        font[size="3"] { font-size: 0.92rem !important; }
+        font[size="5"] { font-size: 1.15rem !important; }
+      </style>
+    </head>
+    <body>
+      <div class="presentation-container">
+        <div style="position: absolute; top: 15px; right: 20px; font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
+          과목: 과학 | 성취기준: [6과12-01] 하루 동안 태양과 별을 관찰하여 위치 변화의 규칙성을 찾을 수 있다.
+        </div>
+
+        
+        <div class="slide active" id="slide-0">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fff1f2; color: #b91c1c; border: 1px solid #fecaca">
+              오개념
+            </span>
+            <span class="slide-title">지구의 공전과 밤하늘 변화에 대한 인지적 오개념 분석</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b91c1c">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 지구가 태양 주위를 도니까 태양이 움직여서 밤하늘 별자리가 바뀌는 거 아니에요? 아니면 지구가 제자리에서 엄청 빨리 돌아서 별이 바뀌는 건가요?</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 오개념 원인</div>
+              <div class="box-content"><div>• <b><font color="#ef4444">지구 중심적 사고</font></b>: 학생들은 자신의 위치가 고정되어 있다고 느끼기 때문에, 별자리가 바뀌는 이유를 지구가 이동하기 때문이 아니라 별이나 태양이 스스로 움직이기 때문이라고 오해합니다.</div>
+<div>• <b><font color="#ef4444">회전과 공전의 혼동</font></b>: 회전목마 비유를 통해 '회전'은 이해하지만, '공전' 과정에서 지구가 태양을 바라보는 면이 달라지면서 밤하늘의 배경이 바뀐다는 공간적 추론에 어려움을 겪습니다.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 지도개념</div>
+              <div class="box-content"><div>• <b><font color="#ef4444">관찰자의 시점 변화</font></b>: 지구가 태양을 중심으로 위치가 이동함에 따라, 지구가 밤에 바라보는 우주의 방향이 달라진다는 점을 핵심적으로 강조해야 합니다.</div>
+<div>• <b><font color="#ef4444">공전 궤도와 밤하늘</font></b>: 태양을 등지고 있을 때만 '밤'이 된다는 사실을 인지시키고, 그 위치에서 바라보는 별자리가 공전 궤도에 따라 달라짐을 시각화해야 합니다.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 피드백/해소설명</div>
+              <div class="box-content"><div>• <b><font color="#ef4444">모델링 피드백</font></b>: '전등을 등진 위치'에서만 사진을 찍게 함으로써, 낮과 밤의 구분을 명확히 하고 밤에만 관찰 가능한 영역이 공전에 따라 어떻게 변하는지 비교 분석하게 합니다.</div>
+<div>• <b><font color="#ef4444">자전축 유지의 중요성</font></b>: 모형 실험 시 자전축이 기울어진 채로 같은 방향을 향하게 하는 것이 계절 변화와 별자리 변화의 핵심임을 직접 조작을 통해 체득하게 합니다.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 추가 갈등질문</div>
+              <div class="box-content"><div>• <b><font color="#ef4444">인지 갈등 유도</font></b>: '만약 지구가 공전하지 않고 제자리에서 자전만 한다면, 1년 내내 밤하늘의 별자리는 같을까?'라는 질문을 통해 공전의 필요성을 스스로 깨닫게 합니다.</div>
+<div>• <b><font color="#ef4444">규모의 확장</font></b>: 지구가 공전하는 궤도가 매우 크기 때문에 우리가 별자리의 위치 변화를 즉각적으로 느끼기 어렵다는 점을 설명하여 거리감에 대한 오해를 바로잡습니다.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-1">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #ecfdf5; color: #15803d; border: 1px solid #bbf7d0">
+              실생활
+            </span>
+            <span class="slide-title">지구의 공전과 일상 속 변화의 연결 고리 찾기</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #15803d">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 회전목마를 탈 때 주변 풍경이 계속 바뀌는 것처럼, 지구가 태양 주위를 도니까 밤하늘에 보이는 별자리가 조금씩 달라지는 것 같아요! 그래서 계절마다 볼 수 있는 별이 다른 거군요?</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 일상 연계 소재</div>
+              <div class="box-content"><div>• <b><font color="#10b981">회전목마 비유의 확장</font></b>: 회전목마를 탄 관찰자의 시점 변화를 지구의 공전 궤도상 위치 변화와 매핑하여, 위치에 따라 배경(별자리)이 달라짐을 시각화합니다.</div>
+<div>• <b><font color="#10b981">공전과 시각적 체감</font></b>: 지구의 공전이 1년이라는 긴 시간 동안 일어나는 운동임을 인지하고, 이를 일상적 시간 단위인 '계절'과 연결하여 체감하도록 합니다.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 실생활 예시</div>
+              <div class="box-content"><div>• <b><font color="#10b981">위치 변화에 따른 관점 차이</font></b>: 태양을 중심으로 지구가 이동할 때, 지구에 있는 관찰자가 바라보는 우주 공간의 배경이 어떻게 바뀌는지에 초점을 맞춥니다.</div>
+<div>• <b><font color="#10b981">지구의 공전과 밤하늘</font></b>: '지구가 이동하면 별을 바라보는 방향이 달라진다'는 핵심 원리를 실생활의 시선 변화와 연결하여 설명합니다.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 연계 활동/과제</div>
+              <div class="box-content"><div>• <b><font color="#10b981">주변 풍경 관찰 과제</font></b>: 등하굣길 같은 장소에서 계절별로 나무나 주변 건물이 별자리처럼 어떻게 다르게 느껴지는지 관찰 일지를 작성해 봅니다.</div>
+<div>• <b><font color="#10b981">디지털 매체 활용</font></b>: 천체 투영관 앱이나 별자리 관측 웹사이트를 통해 계절별 별자리 변화를 시뮬레이션하며 수업 내용을 확인합니다.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 학문적 왜곡 경계</div>
+              <div class="box-content"><div>• <b><font color="#10b981">학문적 경계 설정</font></b>: 지구의 공전이 계절 변화의 근본 원인이지만, 실제 계절 변화는 '자전축이 기울어진 채 공전하기 때문'임을 언급하여, 단순 위치 변화와 계절의 직접적 인과관계를 구분합니다.</div>
+<div>• <b><font color="#10b981">오개념 경계</font></b>: 지구가 공전하기 때문에 밤하늘의 별 자체가 움직이는 것이 아니라, 우리가 별을 바라보는 '지구의 위치'가 변한다는 점을 명확히 합니다.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-2">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a">
+              탐구&안전
+            </span>
+            <span class="slide-title">지구 공전 모형 실험의 조작적 정교화 및 안전 지도</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b45309">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 지구본을 들고 계속 돌다 보니까 자꾸 자전축이 옆으로 기울어지는 것 같아요! 전등을 등지고 서서 찍으려니 제 그림자가 지구본을 가려서 사진이 잘 안 나와요.</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 조작실수/행동오류</div>
+              <div class="box-content"><div>• <b><font color="#f59e0b">자전축 유지의 어려움</font></b>: 지구본을 들고 이동할 때 학생들은 자신의 몸이 회전함에 따라 무의식적으로 지구본의 <font color="#f59e0b">자전축 방향을 태양(전등) 쪽으로 틀어버리는</font> 경향이 강합니다.</div>
+<div>• <b><font color="#f59e0b">시야와 촬영의 간섭</font></b>: 전등을 등지고 서서 지구본을 촬영하는 과정에서 관찰자의 몸이나 스마트 기기가 전등 빛을 가려 <font color="#f59e0b">그림자가 생기는 조작 오류</font>가 빈번합니다.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 핵심 안전 예방책</div>
+              <div class="box-content"><div>• <b><font color="#f59e0b">광원 안전 수칙</font></b>: 발광 다이오드 전등은 열이 발생할 수 있으므로 <font color="#f59e0b">눈으로 직접 응시하지 않도록</font> 하고, 전선에 걸려 넘어지지 않도록 책상 배치를 사전에 점검해야 합니다.</div>
+<div>• <b><font color="#f59e0b">기기 낙하 방지</font></b>: 스마트 기기를 들고 이동하며 촬영하므로, 기기를 떨어뜨려 파손되지 않도록 <font color="#f59e0b">두 손으로 기기를 단단히 잡고 이동</font>하도록 지도해야 합니다.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 오동작 대처/피드백</div>
+              <div class="box-content"><div>• <b><font color="#f59e0b">조작 피드백</font></b>: 자전축이 틀어질 경우, "지구본의 북극이 항상 교실의 특정 벽면을 가리키도록 고정해보자"는 <font color="#f59e0b">기준점(고정점) 설정 비계</font>를 제공합니다.</div>
+<div>• <b><font color="#f59e0b">오동작 원인 규명</font></b>: 사진 속 지구의 모습이 예상과 다를 경우, 지구가 이동한 궤도(원형)를 벗어났거나 <font color="#f59e0b">자전축의 기울기 방향이 변했는지</font>를 학생 스스로 체크리스트를 통해 확인하게 합니다.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 탐구 기능 가이드</div>
+              <div class="box-content"><div>• <b><font color="#f59e0b">탐구 기능 강화</font></b>: 모형 실험 후, (가)~(라) 위치에서 찍은 사진들을 나열하여 <font color="#f59e0b">태양을 바라보는 지구의 면이 어떻게 달라지는지</font> 시각적으로 비교하는 분석 활동을 추가합니다.</div>
+<div>• <b><font color="#f59e0b">변인 통제 강조</font></b>: "만약 지구본의 자전축을 바꾸지 않고 그대로 유지했다면, 위치별로 태양 빛을 받는 모습은 어떻게 달라질까?"와 같은 <font color="#f59e0b">가설 검증형 질문</font>을 통해 탐구의 깊이를 더합니다.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-3">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd">
+              학습연계
+            </span>
+            <span class="slide-title">지구의 운동과 밤하늘 변화의 연속적 이해</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #0369a1">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 지난 시간에 별이 이동하는 걸 배웠는데, 지구가 공전하면서 태양 주변을 도니까 밤에 보이는 별자리 위치도 지구의 위치에 따라 바뀌는 것 같아요!</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 선수 학습 개념</div>
+              <div class="box-content"><div>• <b>선수 학습 개념</b>: 밤하늘에서 별의 일주 운동(지구의 자전 결과), 방위(동서남북)에 대한 이해, 태양의 고도와 그림자 변화</div>
+<div>• <b>연계의 중요성</b>: 지구의 <font color="#06b6d4">자전</font>이 하루 동안의 변화를 설명한다면, <font color="#06b6d4">공전</font>은 1년 주기의 계절별 변화를 설명하는 핵심 기제임</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 본 수업 연결고리</div>
+              <div class="box-content"><div>• <b>연결 고리 강조</b>: '지구의 위치 변화(공전) → 태양을 등지고 보는 밤하늘의 방향 변화 → 보이는 별자리의 차이'로 이어지는 <font color="#06b6d4">인과관계의 흐름</font>을 파악하는 것이 핵심</div>
+<div>• <b>자전축의 불변성</b>: 공전 중에도 자전축이 항상 같은 방향을 향한다는 사실이 계절 변화의 기초가 됨을 명확히 인지시킴</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 후속 학습 심화 개념</div>
+              <div class="box-content"><div>• <b>후속 학습 심화</b>: 중학교 과정에서 다룰 '계절에 따른 별자리의 변화'와 '태양의 남중 고도 변화'를 위한 기초 체력 다지기</div>
+<div>• <b>개념 확장</b>: 지구가 공전 궤도상 어디에 위치하느냐에 따라 지구의 밤 쪽이 향하는 우주 공간의 방향이 달라진다는 점을 시각적 모형으로 강화</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 수업 정리 메타질문</div>
+              <div class="box-content"><div>• <b>메타 질문</b>: "만약 지구가 공전하지 않고 자전만 한다면, 1년 동안 우리가 밤하늘에서 보는 별자리 모습은 어떻게 달라질까?"라는 질문으로 공전의 필요성 강조</div></div>
+            </div>
+          </div>
+        </div>
+        
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <span class="slide-title">📊 한눈에 보는 교육적 관점별 설계 종합표</span>
+      </div>
+      <div style="overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px;">
+        <table>
+          <thead>
+            <tr>
+              <th>분석 영역</th>
+              <th>분석 주제</th>
+              <th>상황 반응 예시</th>
+              <th>주요 특징 요약</th>
+              <th>핵심 지도 강조점</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+      <tr>
+        <td style="font-weight: 700;">인지적 오개념</td>
+        <td style="font-weight: 600;">지구의 공전과 밤하늘 변화에 대한 인지적 오개념 분석</td>
+        <td style="font-style: italic;"><div>• 선생님, 지구가 태양 주위를 도니까 태양이 움직여서 밤하늘 별자리가 바뀌는 거 아니에요? 아니면 지구가 제자리에서 엄청 빨리 돌아서 별이 바뀌는 건가요?</div></td>
+        <td><div>• <b><font color="#ef4444">지구 중심적 사고</font></b>: 학생들은 자신의 위치가 고정되어 있다고 느끼기 때문에, 별자리가 바뀌는 이유를 지구가 이동하기 때문이 아니라 별이나 태양이 스스로 움직이기 때문이라고 오해합니다.</div>
+<div>• <b><font color="#ef4444">회전과 공전의 혼동</font></b>: 회전목마 비유를 통해 '회전'은 이해하지만, '공전' 과정에서 지구가 태양을 바라보는 면이 달라지면서 밤하늘의 배경이 바뀐다는 공간적 추론에 어려움을 겪습니다.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b><font color="#ef4444">관찰자의 시점 변화</font></b>: 지구가 태양을 중심으로 위치가 이동함에 따라, 지구가 밤에 바라보는 우주의 방향이 달라진다는 점을 핵심적으로 강조해야 합니다.</div>
+<div>• <b><font color="#ef4444">공전 궤도와 밤하늘</font></b>: 태양을 등지고 있을 때만 '밤'이 된다는 사실을 인지시키고, 그 위치에서 바라보는 별자리가 공전 궤도에 따라 달라짐을 시각화해야 합니다.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">실생활 연결</td>
+        <td style="font-weight: 600;">지구의 공전과 일상 속 변화의 연결 고리 찾기</td>
+        <td style="font-style: italic;"><div>• 선생님, 회전목마를 탈 때 주변 풍경이 계속 바뀌는 것처럼, 지구가 태양 주위를 도니까 밤하늘에 보이는 별자리가 조금씩 달라지는 것 같아요! 그래서 계절마다 볼 수 있는 별이 다른 거군요?</div></td>
+        <td><div>• <b><font color="#10b981">회전목마 비유의 확장</font></b>: 회전목마를 탄 관찰자의 시점 변화를 지구의 공전 궤도상 위치 변화와 매핑하여, 위치에 따라 배경(별자리)이 달라짐을 시각화합니다.</div>
+<div>• <b><font color="#10b981">공전과 시각적 체감</font></b>: 지구의 공전이 1년이라는 긴 시간 동안 일어나는 운동임을 인지하고, 이를 일상적 시간 단위인 '계절'과 연결하여 체감하도록 합니다.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b><font color="#10b981">위치 변화에 따른 관점 차이</font></b>: 태양을 중심으로 지구가 이동할 때, 지구에 있는 관찰자가 바라보는 우주 공간의 배경이 어떻게 바뀌는지에 초점을 맞춥니다.</div>
+<div>• <b><font color="#10b981">지구의 공전과 밤하늘</font></b>: '지구가 이동하면 별을 바라보는 방향이 달라진다'는 핵심 원리를 실생활의 시선 변화와 연결하여 설명합니다.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">탐구 과정 및 안전</td>
+        <td style="font-weight: 600;">지구 공전 모형 실험의 조작적 정교화 및 안전 지도</td>
+        <td style="font-style: italic;"><div>• 선생님, 지구본을 들고 계속 돌다 보니까 자꾸 자전축이 옆으로 기울어지는 것 같아요! 전등을 등지고 서서 찍으려니 제 그림자가 지구본을 가려서 사진이 잘 안 나와요.</div></td>
+        <td><div>• <b><font color="#f59e0b">자전축 유지의 어려움</font></b>: 지구본을 들고 이동할 때 학생들은 자신의 몸이 회전함에 따라 무의식적으로 지구본의 <font color="#f59e0b">자전축 방향을 태양(전등) 쪽으로 틀어버리는</font> 경향이 강합니다.</div>
+<div>• <b><font color="#f59e0b">시야와 촬영의 간섭</font></b>: 전등을 등지고 서서 지구본을 촬영하는 과정에서 관찰자의 몸이나 스마트 기기가 전등 빛을 가려 <font color="#f59e0b">그림자가 생기는 조작 오류</font>가 빈번합니다.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b><font color="#f59e0b">광원 안전 수칙</font></b>: 발광 다이오드 전등은 열이 발생할 수 있으므로 <font color="#f59e0b">눈으로 직접 응시하지 않도록</font> 하고, 전선에 걸려 넘어지지 않도록 책상 배치를 사전에 점검해야 합니다.</div>
+<div>• <b><font color="#f59e0b">기기 낙하 방지</font></b>: 스마트 기기를 들고 이동하며 촬영하므로, 기기를 떨어뜨려 파손되지 않도록 <font color="#f59e0b">두 손으로 기기를 단단히 잡고 이동</font>하도록 지도해야 합니다.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">학습 연계성</td>
+        <td style="font-weight: 600;">지구의 운동과 밤하늘 변화의 연속적 이해</td>
+        <td style="font-style: italic;"><div>• 선생님, 지난 시간에 별이 이동하는 걸 배웠는데, 지구가 공전하면서 태양 주변을 도니까 밤에 보이는 별자리 위치도 지구의 위치에 따라 바뀌는 것 같아요!</div></td>
+        <td><div>• <b>선수 학습 개념</b>: 밤하늘에서 별의 일주 운동(지구의 자전 결과), 방위(동서남북)에 대한 이해, 태양의 고도와 그림자 변화</div>
+<div>• <b>연계의 중요성</b>: 지구의 <font color="#06b6d4">자전</font>이 하루 동안의 변화를 설명한다면, <font color="#06b6d4">공전</font>은 1년 주기의 계절별 변화를 설명하는 핵심 기제임</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>연결 고리 강조</b>: '지구의 위치 변화(공전) → 태양을 등지고 보는 밤하늘의 방향 변화 → 보이는 별자리의 차이'로 이어지는 <font color="#06b6d4">인과관계의 흐름</font>을 파악하는 것이 핵심</div>
+<div>• <b>자전축의 불변성</b>: 공전 중에도 자전축이 항상 같은 방향을 향한다는 사실이 계절 변화의 기초가 됨을 명확히 인지시킴</div></td>
+      </tr>
+      
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+
+        <div class="controls">
+          <button class="btn" id="prev-btn" onclick="prevSlide()" disabled>◀ 이전</button>
+          <div class="dots" id="dots-container"></div>
+          <button class="btn btn-next" id="next-btn" onclick="nextSlide()">다음 ▶</button>
+        </div>
+      </div>
+
+      <script>
+        let currentIdx = 0;
+        const totalSlides = 5;
+
+        function updateSlide() {
+          document.querySelectorAll('.slide').forEach((slide, idx) => {
+            if (idx === currentIdx) {
+              slide.classList.add('active');
+            } else {
+              slide.classList.remove('active');
+            }
+          });
+
+          document.getElementById('prev-btn').disabled = currentIdx === 0;
+          
+          const nextBtn = document.getElementById('next-btn');
+          if (currentIdx === totalSlides - 1) {
+            nextBtn.textContent = '종료';
+          } else {
+            nextBtn.textContent = '다음 ▶';
+          }
+
+          document.querySelectorAll('.dot').forEach((dot, idx) => {
+            if (idx === currentIdx) {
+              dot.classList.add('active');
+            } else {
+              dot.classList.remove('active');
+            }
+          });
+        }
+
+        function nextSlide() {
+          if (currentIdx < totalSlides - 1) {
+            currentIdx++;
+            updateSlide();
+          } else {
+            alert('수업 설계 리포트 뷰어가 종료되었습니다.');
+          }
+        }
+
+        function prevSlide() {
+          if (currentIdx > 0) {
+            currentIdx--;
+            updateSlide();
+          }
+        }
+
+        // Generate Dots
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 0; i < totalSlides; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'dot' + (i === 0 ? ' active' : '');
+          dot.onclick = () => { currentIdx = i; updateSlide(); };
+          dotsContainer.appendChild(dot);
+        }
+      </script>
+    </body>
+    </html>
+    

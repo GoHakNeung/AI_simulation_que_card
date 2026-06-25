@@ -1,0 +1,526 @@
+
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>AI 수업 시뮬레이션 대본 큐카드</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          --primary: #3b82f6;
+          --text-main: #1e293b;
+          --bg-main: #f8fafc;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: 'Inter', 'Outfit', sans-serif;
+          background: #0f172a;
+          color: var(--text-main);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          overflow: hidden;
+        }
+        .presentation-container {
+          width: 90%;
+          max-width: 900px;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          border-radius: 20px;
+          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+          padding: 40px;
+          min-height: 520px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .slide {
+          display: none;
+          flex-direction: column;
+          flex: 1;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+          max-height: 420px;
+          overflow-y: auto;
+          padding-right: 4px;
+          padding-top: 15px;
+        }
+        .slide.active {
+          display: flex;
+          opacity: 1;
+        }
+        .binder-holes {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .hole {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          border: 1px solid #94a3b8;
+        }
+        .slide-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border-bottom: 2px solid #e2e8f0;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+        }
+        .badge {
+          padding: 4px 14px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+        }
+        .slide-title {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #0f172a;
+        }
+        .quote-card {
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px 24px;
+          margin-bottom: 20px;
+          position: relative;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+        }
+        .quote-label {
+          position: absolute;
+          top: -10px;
+          left: 20px;
+          background: #f8fafc;
+          padding: 0 8px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #64748b;
+        }
+        .quote-content {
+          font-size: 1.05rem;
+          font-weight: 600;
+          color: #334155;
+          line-height: 1.6;
+          font-style: italic;
+          white-space: pre-wrap;
+        }
+        .grid-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          flex: 1;
+        }
+        .grid-box {
+          border-radius: 10px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .box-1 { background: #f0f9ff; border: 1px solid #e0f2fe; }
+        .box-2 { background: #ecfdf5; border: 1px solid #dcfce7; }
+        .box-3 { background: #fffbeb; border: 1px solid #fef3c7; }
+        .box-4 { background: #faf5ff; border: 1px solid #f3e8ff; }
+        
+        .box-title {
+          font-weight: 700;
+          font-size: 0.88rem;
+          margin-bottom: 8px;
+          padding-bottom: 4px;
+        }
+        .title-1 { color: #0369a1; border-bottom: 1px solid #bae6fd; }
+        .title-2 { color: #15803d; border-bottom: 1px solid #bbf7d0; }
+        .title-3 { color: #b45309; border-bottom: 1px solid #fde68a; }
+        .title-4 { color: #6b21a8; border-bottom: 1px solid #e9d5ff; }
+
+        .box-content {
+          font-size: 0.85rem;
+          line-height: 1.5;
+          overflow-y: auto;
+          flex: 1;
+          white-space: pre-wrap;
+        }
+        .box-content div { margin-bottom: 4px; }
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 0.78rem;
+        }
+        th {
+          background: #f8fafc;
+          border-bottom: 1.5px solid #e2e8f0;
+          padding: 10px;
+          font-weight: 700;
+          color: #475569;
+        }
+        td {
+          padding: 10px;
+          color: #475569;
+          border-bottom: 1px solid #f1f5f9;
+          background: white;
+        }
+        
+        .controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid #e2e8f0;
+          padding-top: 20px;
+          margin-top: 20px;
+        }
+        button.btn {
+          padding: 8px 18px;
+          background: #ffffff;
+          color: #334155;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.2s;
+        }
+        button.btn:disabled {
+          background: #e2e8f0;
+          color: #94a3b8;
+          cursor: not-allowed;
+        }
+        button.btn-next {
+          background: var(--primary);
+          color: white;
+          border: none;
+        }
+        .dots {
+          display: flex;
+          gap: 8px;
+        }
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .dot.active {
+          width: 12px;
+          background: var(--primary);
+        }
+        /* Font size customization */
+        font[size="2"] { font-size: 0.8rem !important; }
+        font[size="3"] { font-size: 0.92rem !important; }
+        font[size="5"] { font-size: 1.15rem !important; }
+      </style>
+    </head>
+    <body>
+      <div class="presentation-container">
+        <div style="position: absolute; top: 15px; right: 20px; font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
+          과목: 과학 | 성취기준: [6과11-01] 생물을 이루고 있는 기본 단위인 세포를 현미경으로 관찰할 수 있다.
+        </div>
+
+        
+        <div class="slide active" id="slide-0">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fff1f2; color: #b91c1c; border: 1px solid #fecaca">
+              오개념
+            </span>
+            <span class="slide-title">식물 뿌리의 기능에 대한 '단순 고정' 및 '무생물적 흡수' 오개념</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b91c1c">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 뿌리는 그냥 식물이 안 쓰러지게 꽉 잡아주는 다리 같은 거 아니에요? 물은 그냥 땅이 젖어 있으니까 식물이 흙에서 저절로 빨아들이는 것 같아요.</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 오개념 원인</div>
+              <div class="box-content"><div>• <b><font color="#ef4444">생물학적 주체성 결여</font></b>: 학생들이 식물을 스스로 에너지를 얻고 생존하는 능동적 유기체가 아닌, 단순히 흙에 꽂혀 있는 정적인 대상으로 인식함.</div>
+<div>• <b><font color="#ef4444">흡수 기전의 오해</font></b>: 뿌리의 생명 활동(뿌리털의 삼투압 등)을 이해하지 못하고, 마치 스펀지가 물을 머금듯 단순히 흙 속의 물이 식물 안으로 이동한다고 생각함.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 지도개념</div>
+              <div class="box-content"><div>• <b><font color="#ef4444">뿌리털의 역할 강조</font></b>: 뿌리 표면의 촘촘한 뿌리털이 물과 접촉하는 표면적을 극대화하여 효율적으로 <font color="#ef4444">물과 무기 양분</font>을 흡수함을 시각화해야 함.</div>
+<div>• <b><font color="#ef4444">생명 활동의 증거</font></b>: 실험에서 뿌리가 있는 모종의 물이 줄어드는 현상을 통해 뿌리가 에너지를 소모하며 <font color="#ef4444">능동적으로 물을 흡수</font>하고 있음을 연결함.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 피드백/해소설명</div>
+              <div class="box-content"><div>• <b><font color="#ef4444">실험 결과의 역설</font></b>: 뿌리를 자른 모종의 물이 줄어들지 않음을 관찰하게 하여, '단순히 흙에 꽂혀 있으면 물을 먹는다'는 오개념을 <font color="#ef4444">인지적 갈등</font>을 통해 스스로 수정하도록 유도함.</div>
+<div>• <b><font color="#ef4444">비유적 설명</font></b>: 뿌리를 '식물의 입'에 비유하여, 우리 몸이 음식을 먹듯 식물도 뿌리를 통해 물을 마시는 '생명 활동'임을 지속적으로 강조함.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 추가 갈등질문</div>
+              <div class="box-content"><div>• <b><font color="#ef4444">심화 질문</font></b>: "만약 뿌리가 단순히 고정 역할만 한다면, 왜 식물마다 뿌리 모양이 다를까요?"와 같은 질문으로 <font color="#ef4444">형태와 기능의 상관관계</font>를 사고하도록 함.</div>
+<div>• <b><font color="#ef4444">생태적 관점 확장</font></b>: 수경 재배와 같이 흙이 없는 환경에서도 식물이 자랄 수 있음을 통해, 뿌리의 본질적 기능이 '지지'가 아닌 '흡수'임을 재확인함.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-1">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #ecfdf5; color: #15803d; border: 1px solid #bbf7d0">
+              실생활
+            </span>
+            <span class="slide-title">식물의 생존 전략과 영양분 저장의 상관관계</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #15803d">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 당근은 겨울처럼 추울 때 먹을 게 없으니까 미리 배를 채워두려고 영양분을 모아두는 거 아닐까요? 아니면 나중에 꽃을 피우거나 씨앗을 만들 때 힘을 쓰려고 보관하는 것 같아요!</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 일상 연계 소재</div>
+              <div class="box-content"><div>• <b><font color="#10b981">일상 소재의 친숙성</font></b>: 학생들이 매일 급식이나 식탁에서 접하는 <u>당근, 고구마, 감자</u>를 통해 식물의 생존 본능을 생동감 있게 탐구하도록 유도합니다.</div>
+<div>• <b><font color="#10b981">생존 전략 인식</font></b>: 식물을 단순히 '자라는 것'이 아니라, <u>환경 변화에 대응하는 주체</u>로 인식하게 함으로써 생물학적 흥미를 높입니다.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 실생활 예시</div>
+              <div class="box-content"><div>• <b><font color="#10b981">에너지 저장의 목적</font></b>: 뿌리에 영양분을 저장하는 것이 단순한 축적이 아니라, <u>다음 세대 번식(꽃과 씨앗)</u>이나 <u>불리한 계절을 견디기 위한 전략</u>임을 강조해야 합니다.</div>
+<div>• <b><font color="#10b981">구조와 기능의 관계</font></b>: 뿌리의 굵은 생김새가 <u>양분 저장이라는 특정 기능</u>을 수행하기에 적합한 형태임을 시각적 자료와 연결하여 설명합니다.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 연계 활동/과제</div>
+              <div class="box-content"><div>• <b><font color="#10b981">가정 연계 탐구</font></b>: 냉장고 속 채소 중 뿌리(당근, 무), 줄기(양파), 잎(시금치)을 찾아보고 <u>왜 뿌리가 굵어졌는지</u>를 추측해보는 미션을 부여합니다.</div>
+<div>• <b><font color="#10b981">비교 관찰 활동</font></b>: 잎이 무성한 식물과 뿌리가 굵은 식물의 생장 환경을 비교하여 <u>지상부와 지하부의 역할 분담</u>을 이해하도록 돕습니다.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 학문적 왜곡 경계</div>
+              <div class="box-content"><div>• <b><font color="#10b981">학문적 경계 설정</font></b>: 모든 굵은 뿌리가 영양분 저장용은 아니며, <u>종의 특성</u>에 따라 다양하다는 점을 언급하여 일반화의 오류를 방지합니다.</div>
+<div>• <b><font color="#10b981">의인화 주의</font></b>: 식물이 '생각해서' 영양분을 저장한다는 식의 <u>목적론적 사고</u>가 지나치지 않도록, 자연선택과 진화적 관점의 기초를 가볍게 터치합니다.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-2">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a">
+              탐구&안전
+            </span>
+            <span class="slide-title">식물 뿌리 실험의 변인 통제와 안전한 실험 도구 조작</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b45309">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 뿌리를 자르다가 칼날이 미끄러질 뻔했어요! 그리고 눈금실린더 물 높이를 잴 때 눈높이를 어디에 맞춰야 정확한 건가요?</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 조작실수/행동오류</div>
+              <div class="box-content"><div>• <b>조작 미숙으로 인한 안전사고</b>: <font color="#f59e0b">안전 칼</font> 사용 시 힘 조절 실패로 인한 손 베임이나, 유리 기구 파손으로 인한 2차 사고 발생 가능성이 높음.</div>
+<div>• <b>변인 통제 오류</b>: 실험군과 대조군 사이의 <font color="#f59e0b">물 높이 초기값</font>을 다르게 설정하거나, 모종의 크기 차이를 고려하지 않아 결과 해석에 오류를 범함.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 핵심 안전 예방책</div>
+              <div class="box-content"><div>• <b>안전 수칙의 생활화</b>: 반드시 <font color="#f59e0b">코팅 장갑</font>을 착용하고, 칼날을 몸 바깥쪽으로 향하게 하여 자르는 <font color="#f59e0b">안전한 도구 조작법</font>을 시연을 통해 강조함.</div>
+<div>• <b>정밀한 관찰 기준 설정</b>: 눈금실린더의 눈금을 읽을 때 <font color="#f59e0b">눈높이를 수평으로 맞추는 방법</font>과 유성펜으로 초기 높이를 표시할 때의 정확성을 최우선으로 지도함.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 오동작 대처/피드백</div>
+              <div class="box-content"><div>• <b>오동작 피드백</b>: 물이 줄어들지 않는 경우 <font color="#f59e0b">비닐 랩과 탈지면의 밀봉 상태</font>를 점검하여 증발로 인한 오차 가능성을 스스로 확인하도록 안내함.</div>
+<div>• <b>데이터 신뢰성 확보</b>: 스마트 기기를 이용한 사진 촬영 시 <font color="#f59e0b">동일한 각도와 거리</font>에서 촬영하여 시간 경과에 따른 변화를 객관적으로 비교하도록 독려함.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 탐구 기능 가이드</div>
+              <div class="box-content"><div>• <b>탐구 기능 비계 설정</b>: '왜 물이 줄어들었을까?'라는 질문을 통해 <font color="#f59e0b">뿌리의 흡수 작용</font>과 <font color="#f59e0b">증산 작용</font> 사이의 인과관계를 스스로 추론하도록 유도함.</div>
+<div>• <b>조작 가이드</b>: 실험 전, 고추 모종의 잎 개수가 물 소비량에 영향을 미칠 수 있음을 인지시키고 <font color="#f59e0b">변인 통제</font>의 중요성을 재차 강조함.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-3">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd">
+              학습연계
+            </span>
+            <span class="slide-title">식물 생김새 관찰에서 뿌리의 기능적 탐구로의 전이</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #0369a1">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 3학년 때는 식물이 어떻게 생겼는지 모양만 관찰했는데, 이제는 뿌리가 물을 빨아들이는 '기능'을 한다는 게 신기해요. 뿌리가 없으면 식물이 말라 죽는다는 걸 실험으로 확인하고 싶어요!</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 선수 학습 개념</div>
+              <div class="box-content"><div>• <b>선수 학습 개념</b>: 3학년 1학기 '식물의 한살이'에서 다룬 <u>식물의 각 부위(뿌리, 줄기, 잎)의 이름과 기본적인 생김새</u>에 대한 인지적 토대</div>
+<div>• <b>연계의 핵심</b>: 단순한 <font color="#06b6d4">외형적 관찰(형태)</font>에서 벗어나, 구조와 기능이 일치한다는 <font color="#06b6d4">생물학적 원리(기능)</font>로 사고를 확장하는 단계</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 본 수업 연결고리</div>
+              <div class="box-content"><div>• <b>연속성 확보</b>: 3학년 때 관찰한 '식물의 생김새'가 단순히 이름 익히기가 아닌, <u>생존을 위한 최적화된 구조</u>임을 깨닫게 하는 연결고리 강조</div>
+<div>• <b>개념의 심화</b>: 식물의 부위별 역할이 분담되어 있다는 <font color="#06b6d4">기능적 분업화</font> 개념을 명확히 정의</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 후속 학습 심화 개념</div>
+              <div class="box-content"><div>• <b>후속 학습 연계</b>: 5~6학년 과정의 '식물의 구조와 기능(광합성, 증산 작용)'을 학습하기 위한 필수적인 <font color="#06b6d4">기초 소양 확보</font></div>
+<div>• <b>종합 연계 팁</b>: 뿌리털의 역할을 설명할 때, 표면적을 넓혀 물 흡수를 돕는다는 원리를 <u>소장의 융털</u>과 같은 생물학적 원리와 연결하여 설명</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 수업 정리 메타질문</div>
+              <div class="box-content"><div>• <b>메타 인지 질문</b>: "만약 뿌리가 식물의 몸 전체를 덮고 있다면 식물은 어떻게 될까?"와 같은 질문으로 <u>구조와 환경의 적응성</u>을 스스로 고민하게 함</div>
+<div>• <b>학습의 완성</b>: "뿌리의 모양이 다양한 이유는 식물이 사는 환경에 맞춰 물과 양분을 가장 잘 얻기 위해서이다"라는 <font color="#06b6d4">핵심 요약</font>으로 단원 정리</div></div>
+            </div>
+          </div>
+        </div>
+        
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <span class="slide-title">📊 한눈에 보는 교육적 관점별 설계 종합표</span>
+      </div>
+      <div style="overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px;">
+        <table>
+          <thead>
+            <tr>
+              <th>분석 영역</th>
+              <th>분석 주제</th>
+              <th>상황 반응 예시</th>
+              <th>주요 특징 요약</th>
+              <th>핵심 지도 강조점</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+      <tr>
+        <td style="font-weight: 700;">인지적 오개념</td>
+        <td style="font-weight: 600;">식물 뿌리의 기능에 대한 '단순 고정' 및 '무생물적 흡수' 오개념</td>
+        <td style="font-style: italic;"><div>• 뿌리는 그냥 식물이 안 쓰러지게 꽉 잡아주는 다리 같은 거 아니에요? 물은 그냥 땅이 젖어 있으니까 식물이 흙에서 저절로 빨아들이는 것 같아요.</div></td>
+        <td><div>• <b><font color="#ef4444">생물학적 주체성 결여</font></b>: 학생들이 식물을 스스로 에너지를 얻고 생존하는 능동적 유기체가 아닌, 단순히 흙에 꽂혀 있는 정적인 대상으로 인식함.</div>
+<div>• <b><font color="#ef4444">흡수 기전의 오해</font></b>: 뿌리의 생명 활동(뿌리털의 삼투압 등)을 이해하지 못하고, 마치 스펀지가 물을 머금듯 단순히 흙 속의 물이 식물 안으로 이동한다고 생각함.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b><font color="#ef4444">뿌리털의 역할 강조</font></b>: 뿌리 표면의 촘촘한 뿌리털이 물과 접촉하는 표면적을 극대화하여 효율적으로 <font color="#ef4444">물과 무기 양분</font>을 흡수함을 시각화해야 함.</div>
+<div>• <b><font color="#ef4444">생명 활동의 증거</font></b>: 실험에서 뿌리가 있는 모종의 물이 줄어드는 현상을 통해 뿌리가 에너지를 소모하며 <font color="#ef4444">능동적으로 물을 흡수</font>하고 있음을 연결함.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">실생활 연결</td>
+        <td style="font-weight: 600;">식물의 생존 전략과 영양분 저장의 상관관계</td>
+        <td style="font-style: italic;"><div>• 당근은 겨울처럼 추울 때 먹을 게 없으니까 미리 배를 채워두려고 영양분을 모아두는 거 아닐까요? 아니면 나중에 꽃을 피우거나 씨앗을 만들 때 힘을 쓰려고 보관하는 것 같아요!</div></td>
+        <td><div>• <b><font color="#10b981">일상 소재의 친숙성</font></b>: 학생들이 매일 급식이나 식탁에서 접하는 <u>당근, 고구마, 감자</u>를 통해 식물의 생존 본능을 생동감 있게 탐구하도록 유도합니다.</div>
+<div>• <b><font color="#10b981">생존 전략 인식</font></b>: 식물을 단순히 '자라는 것'이 아니라, <u>환경 변화에 대응하는 주체</u>로 인식하게 함으로써 생물학적 흥미를 높입니다.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b><font color="#10b981">에너지 저장의 목적</font></b>: 뿌리에 영양분을 저장하는 것이 단순한 축적이 아니라, <u>다음 세대 번식(꽃과 씨앗)</u>이나 <u>불리한 계절을 견디기 위한 전략</u>임을 강조해야 합니다.</div>
+<div>• <b><font color="#10b981">구조와 기능의 관계</font></b>: 뿌리의 굵은 생김새가 <u>양분 저장이라는 특정 기능</u>을 수행하기에 적합한 형태임을 시각적 자료와 연결하여 설명합니다.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">탐구 과정 및 안전</td>
+        <td style="font-weight: 600;">식물 뿌리 실험의 변인 통제와 안전한 실험 도구 조작</td>
+        <td style="font-style: italic;"><div>• 선생님, 뿌리를 자르다가 칼날이 미끄러질 뻔했어요! 그리고 눈금실린더 물 높이를 잴 때 눈높이를 어디에 맞춰야 정확한 건가요?</div></td>
+        <td><div>• <b>조작 미숙으로 인한 안전사고</b>: <font color="#f59e0b">안전 칼</font> 사용 시 힘 조절 실패로 인한 손 베임이나, 유리 기구 파손으로 인한 2차 사고 발생 가능성이 높음.</div>
+<div>• <b>변인 통제 오류</b>: 실험군과 대조군 사이의 <font color="#f59e0b">물 높이 초기값</font>을 다르게 설정하거나, 모종의 크기 차이를 고려하지 않아 결과 해석에 오류를 범함.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>안전 수칙의 생활화</b>: 반드시 <font color="#f59e0b">코팅 장갑</font>을 착용하고, 칼날을 몸 바깥쪽으로 향하게 하여 자르는 <font color="#f59e0b">안전한 도구 조작법</font>을 시연을 통해 강조함.</div>
+<div>• <b>정밀한 관찰 기준 설정</b>: 눈금실린더의 눈금을 읽을 때 <font color="#f59e0b">눈높이를 수평으로 맞추는 방법</font>과 유성펜으로 초기 높이를 표시할 때의 정확성을 최우선으로 지도함.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">학습 연계성</td>
+        <td style="font-weight: 600;">식물 생김새 관찰에서 뿌리의 기능적 탐구로의 전이</td>
+        <td style="font-style: italic;"><div>• 3학년 때는 식물이 어떻게 생겼는지 모양만 관찰했는데, 이제는 뿌리가 물을 빨아들이는 '기능'을 한다는 게 신기해요. 뿌리가 없으면 식물이 말라 죽는다는 걸 실험으로 확인하고 싶어요!</div></td>
+        <td><div>• <b>선수 학습 개념</b>: 3학년 1학기 '식물의 한살이'에서 다룬 <u>식물의 각 부위(뿌리, 줄기, 잎)의 이름과 기본적인 생김새</u>에 대한 인지적 토대</div>
+<div>• <b>연계의 핵심</b>: 단순한 <font color="#06b6d4">외형적 관찰(형태)</font>에서 벗어나, 구조와 기능이 일치한다는 <font color="#06b6d4">생물학적 원리(기능)</font>로 사고를 확장하는 단계</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>연속성 확보</b>: 3학년 때 관찰한 '식물의 생김새'가 단순히 이름 익히기가 아닌, <u>생존을 위한 최적화된 구조</u>임을 깨닫게 하는 연결고리 강조</div>
+<div>• <b>개념의 심화</b>: 식물의 부위별 역할이 분담되어 있다는 <font color="#06b6d4">기능적 분업화</font> 개념을 명확히 정의</div></td>
+      </tr>
+      
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+
+        <div class="controls">
+          <button class="btn" id="prev-btn" onclick="prevSlide()" disabled>◀ 이전</button>
+          <div class="dots" id="dots-container"></div>
+          <button class="btn btn-next" id="next-btn" onclick="nextSlide()">다음 ▶</button>
+        </div>
+      </div>
+
+      <script>
+        let currentIdx = 0;
+        const totalSlides = 5;
+
+        function updateSlide() {
+          document.querySelectorAll('.slide').forEach((slide, idx) => {
+            if (idx === currentIdx) {
+              slide.classList.add('active');
+            } else {
+              slide.classList.remove('active');
+            }
+          });
+
+          document.getElementById('prev-btn').disabled = currentIdx === 0;
+          
+          const nextBtn = document.getElementById('next-btn');
+          if (currentIdx === totalSlides - 1) {
+            nextBtn.textContent = '종료';
+          } else {
+            nextBtn.textContent = '다음 ▶';
+          }
+
+          document.querySelectorAll('.dot').forEach((dot, idx) => {
+            if (idx === currentIdx) {
+              dot.classList.add('active');
+            } else {
+              dot.classList.remove('active');
+            }
+          });
+        }
+
+        function nextSlide() {
+          if (currentIdx < totalSlides - 1) {
+            currentIdx++;
+            updateSlide();
+          } else {
+            alert('수업 설계 리포트 뷰어가 종료되었습니다.');
+          }
+        }
+
+        function prevSlide() {
+          if (currentIdx > 0) {
+            currentIdx--;
+            updateSlide();
+          }
+        }
+
+        // Generate Dots
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 0; i < totalSlides; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'dot' + (i === 0 ? ' active' : '');
+          dot.onclick = () => { currentIdx = i; updateSlide(); };
+          dotsContainer.appendChild(dot);
+        }
+      </script>
+    </body>
+    </html>
+    
