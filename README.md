@@ -20,4 +20,4 @@
 - [빈도수 표현_건강한 습관 체크리스트](english/YBM_6th_Grade_Unit5_Healthy_habits_checklist.html)
 
 # 개발한 웹사이트 이미지
-- ![시뮬레이션을 위한 성취기준, 주제 등 입력](web_image/1-1시뮬레이션 시작.png)
+- ![web_image/1-1시뮬레이션 시작.png](https://github.com/GoHakNeung/AI_simulation_que_card/blob/main/web_image/1-1-2%EC%8B%9C%EB%AE%AC%EB%A0%88%EC%9D%B4%EC%85%98%20%EA%B2%B0%EA%B3%BC%EB%AC%BC%20%EC%A0%80%EC%9E%A5.png?raw=true)
