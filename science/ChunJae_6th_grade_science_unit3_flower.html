@@ -1,0 +1,526 @@
+
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>AI 수업 시뮬레이션 대본 큐카드</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          --primary: #3b82f6;
+          --text-main: #1e293b;
+          --bg-main: #f8fafc;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: 'Inter', 'Outfit', sans-serif;
+          background: #0f172a;
+          color: var(--text-main);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          overflow: hidden;
+        }
+        .presentation-container {
+          width: 90%;
+          max-width: 900px;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          border-radius: 20px;
+          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+          padding: 40px;
+          min-height: 520px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .slide {
+          display: none;
+          flex-direction: column;
+          flex: 1;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+          max-height: 420px;
+          overflow-y: auto;
+          padding-right: 4px;
+          padding-top: 15px;
+        }
+        .slide.active {
+          display: flex;
+          opacity: 1;
+        }
+        .binder-holes {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .hole {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          border: 1px solid #94a3b8;
+        }
+        .slide-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border-bottom: 2px solid #e2e8f0;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+        }
+        .badge {
+          padding: 4px 14px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+        }
+        .slide-title {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #0f172a;
+        }
+        .quote-card {
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px 24px;
+          margin-bottom: 20px;
+          position: relative;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+        }
+        .quote-label {
+          position: absolute;
+          top: -10px;
+          left: 20px;
+          background: #f8fafc;
+          padding: 0 8px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #64748b;
+        }
+        .quote-content {
+          font-size: 1.05rem;
+          font-weight: 600;
+          color: #334155;
+          line-height: 1.6;
+          font-style: italic;
+          white-space: pre-wrap;
+        }
+        .grid-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          flex: 1;
+        }
+        .grid-box {
+          border-radius: 10px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .box-1 { background: #f0f9ff; border: 1px solid #e0f2fe; }
+        .box-2 { background: #ecfdf5; border: 1px solid #dcfce7; }
+        .box-3 { background: #fffbeb; border: 1px solid #fef3c7; }
+        .box-4 { background: #faf5ff; border: 1px solid #f3e8ff; }
+        
+        .box-title {
+          font-weight: 700;
+          font-size: 0.88rem;
+          margin-bottom: 8px;
+          padding-bottom: 4px;
+        }
+        .title-1 { color: #0369a1; border-bottom: 1px solid #bae6fd; }
+        .title-2 { color: #15803d; border-bottom: 1px solid #bbf7d0; }
+        .title-3 { color: #b45309; border-bottom: 1px solid #fde68a; }
+        .title-4 { color: #6b21a8; border-bottom: 1px solid #e9d5ff; }
+
+        .box-content {
+          font-size: 0.85rem;
+          line-height: 1.5;
+          overflow-y: auto;
+          flex: 1;
+          white-space: pre-wrap;
+        }
+        .box-content div { margin-bottom: 4px; }
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 0.78rem;
+        }
+        th {
+          background: #f8fafc;
+          border-bottom: 1.5px solid #e2e8f0;
+          padding: 10px;
+          font-weight: 700;
+          color: #475569;
+        }
+        td {
+          padding: 10px;
+          color: #475569;
+          border-bottom: 1px solid #f1f5f9;
+          background: white;
+        }
+        
+        .controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid #e2e8f0;
+          padding-top: 20px;
+          margin-top: 20px;
+        }
+        button.btn {
+          padding: 8px 18px;
+          background: #ffffff;
+          color: #334155;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.2s;
+        }
+        button.btn:disabled {
+          background: #e2e8f0;
+          color: #94a3b8;
+          cursor: not-allowed;
+        }
+        button.btn-next {
+          background: var(--primary);
+          color: white;
+          border: none;
+        }
+        .dots {
+          display: flex;
+          gap: 8px;
+        }
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .dot.active {
+          width: 12px;
+          background: var(--primary);
+        }
+        /* Font size customization */
+        font[size="2"] { font-size: 0.8rem !important; }
+        font[size="3"] { font-size: 0.92rem !important; }
+        font[size="5"] { font-size: 1.15rem !important; }
+      </style>
+    </head>
+    <body>
+      <div class="presentation-container">
+        <div style="position: absolute; top: 15px; right: 20px; font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
+          과목: 과학 | 성취기준: [6과11-02] 식물의 각 기관의 구조를 관찰하고, 기능을 알아보는 실험을 수행하여 식물 각 기관의 구조와 기능을 설명할 수 있다.
+        </div>
+
+        
+        <div class="slide active" id="slide-0">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fff1f2; color: #b91c1c; border: 1px solid #fecaca">
+              오개념
+            </span>
+            <span class="slide-title">꽃의 구조와 정의에 대한 고정관념: '완전화' 중심의 편향된 인식</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b91c1c">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 꽃잎이나 꽃받침이 없으면 예쁘지 않으니까 꽃이 아닌 것 같아요. 그리고 암술과 수술이 다 있어야 진짜 꽃이지, 하나만 있으면 반쪽짜리 아닌가요?</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 오개념 원인</div>
+              <div class="box-content"><div>• <b>전형성 편향(Typicality Bias)</b>: 학생들이 교과서에 나오는 복숭아꽃과 같은 <font color="#ef4444">완전화(암술, 수술, 꽃잎, 꽃받침을 모두 갖춘 꽃)</font>만을 '진짜 꽃'의 원형으로 인식하려는 인지적 경향이 강함.</div>
+<div>• <b>기능적 단순화</b>: 꽃의 구조를 생물학적 기능(씨 만들기) 관점이 아닌, 관상용으로서의 <font color="#ef4444">심미적 외형(꽃잎의 유무)</font> 위주로 판단하는 오류를 범함.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 지도개념</div>
+              <div class="box-content"><div>• <b>생물학적 정의 강조</b>: 꽃의 핵심 기능은 화려함이 아니라 <font color="#ef4444">'씨를 만드는 것'</font>임을 명확히 하여, 구조의 유무가 아닌 기능의 수행 여부가 '꽃'을 결정함을 강조해야 함.</div>
+<div>• <b>구조적 다양성 인식</b>: 환경과 번식 전략에 따라 암꽃과 수꽃으로 나뉘거나, 꽃잎이 퇴화한 꽃들이 존재함을 사진 자료를 통해 시각적으로 입증해야 함.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 피드백/해소설명</div>
+              <div class="box-content"><div>• <b>인지 갈등 유도</b>: 호박꽃 사례를 제시하며 '암술만 있는 꽃도 씨를 맺을 수 있는가?'를 질문하여, <font color="#ef4444">부분적 구조가 전체 기능을 보완</font>하는 생태적 원리를 스스로 깨닫게 함.</div>
+<div>• <b>비유적 설명</b>: 꽃의 구조를 '생존을 위한 분업'으로 비유하여, 꽃잎이 없어도 다른 방식으로 꽃가루받이를 수행하는 식물의 전략을 설명함.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 추가 갈등질문</div>
+              <div class="box-content"><div>• <b>심화 탐구 질문</b>: '만약 꽃잎이 아주 화려한 식물과 꽃잎이 거의 없는 식물 중, 어떤 것이 바람을 이용해 꽃가루받이를 할까?'와 같은 <font color="#ef4444">구조와 환경의 상관관계</font>를 묻는 질문으로 확장함.</div>
+<div>• <b>개념 체계화</b>: '꽃은 생식 기관이다'라는 핵심 개념을 바탕으로, 꽃의 각 부위가 생식에 어떻게 기여하는지 매칭하는 활동을 통해 오개념을 교정함.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-1">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #ecfdf5; color: #15803d; border: 1px solid #bbf7d0">
+              실생활
+            </span>
+            <span class="slide-title">꽃가루받이 중단이 우리 식탁에 미치는 영향</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #15803d">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 벌이 다 없어지면 우리가 좋아하는 딸기나 사과를 영원히 못 먹게 될 것 같아요! 마트에서 파는 과일 값이 엄청 비싸져서 사 먹기 힘들 것 같아요.</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 일상 연계 소재</div>
+              <div class="box-content"><div>• <b>생태계 서비스 인식</b>: 학생들이 평소 당연하게 여기던 <font color="#10b981">과일과 채소의 생산 과정</font>이 곤충의 노동력에 의존하고 있음을 자각하게 합니다.</div>
+<div>• <b>식생활 연계</b>: '내가 좋아하는 음식'이라는 <font color="#10b981">개인적 흥미 요소</font>를 도입하여 과학적 현상을 자신의 삶과 직접 연결합니다.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 실생활 예시</div>
+              <div class="box-content"><div>• <b>꽃가루받이의 필수성</b>: 식물이 씨를 맺기 위한 <font color="#10b981">생물학적 필연성</font>과, 이것이 인간의 식량 자원과 직결된다는 <font color="#10b981">경제적 가치</font>를 동시에 강조합니다.</div>
+<div>• <b>매개자의 역할</b>: 단순히 곤충을 관찰하는 것을 넘어, 생태계 내에서의 <font color="#10b981">상호 의존적 관계</font>를 개념화하는 데 집중합니다.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 연계 활동/과제</div>
+              <div class="box-content"><div>• <b>가상 시장 체험</b>: '곤충이 없는 마트' 상황극을 통해 과일 코너가 텅 빈 모습을 상상하게 하여 <font color="#10b981">생물 다양성 보전의 필요성</font>을 체감하게 합니다.</div>
+<div>• <b>주변 관찰 과제</b>: 학교 화단이나 인근 공원에서 꽃을 방문하는 <font color="#10b981">곤충 종류 조사하기</font> 활동을 제안합니다.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 학문적 왜곡 경계</div>
+              <div class="box-content"><div>• <b>학문적 경계 설정</b>: 모든 식물이 곤충에 의해 꽃가루받이를 하는 것은 아님을 명시하여 <font color="#10b981">일반화의 오류</font>를 경계합니다(예: 바람에 의해 꽃가루받이를 하는 벼, 옥수수 등).</div>
+<div>• <b>인공 수정 기술 언급</b>: 곤충이 사라졌을 때 인간이 대신 수행하는 <font color="#10b981">인공 수정(붓질 등)</font>의 한계와 어려움을 토론하여 자연의 소중함을 되새깁니다.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-2">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a">
+              탐구&안전
+            </span>
+            <span class="slide-title">식물 관찰 탐구 중 안전한 도구 조작 및 생태적 태도 형성</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b45309">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 꽃가루가 돋보기 렌즈에 묻었어요! 꽃이 너무 예뻐서 더 자세히 보려고 가까이 댔는데, 꽃잎이 돋보기에 닿아서 살짝 찢어졌어요.</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 조작실수/행동오류</div>
+              <div class="box-content"><div>• <b>근접 관찰의 오류</b>: 돋보기를 꽃에 <u>지나치게 밀착</u>시켜 식물 조직을 손상하거나, 초점을 맞추기 위해 꽃을 꺾어 가져오려는 <b>행동 오류</b>가 빈번함.</div>
+<div>• <b>감각 의존적 탐구</b>: 꽃을 직접 만지거나 냄새를 맡으려는 행동이 <b>알레르기 반응</b> 등 <font color="#f59e0b">안전사고</font>를 유발할 수 있음.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 핵심 안전 예방책</div>
+              <div class="box-content"><div>• <b>생명 존중 태도</b>: 식물은 관찰 대상이자 소중한 생명체임을 강조하여 <b>'눈으로 관찰'</b>하는 기본 원칙을 <font color="#f59e0b">사전 교육</font>해야 함.</div>
+<div>• <b>도구 활용 안전</b>: 스마트 기기를 사용할 때 주변 환경을 살피지 않아 이동 중 <b>충돌 사고</b>가 발생하지 않도록 주의 지도해야 함.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 오동작 대처/피드백</div>
+              <div class="box-content"><div>• <b>오동작 피드백</b>: 꽃이 찢어지거나 꺾인 경우, 식물의 생장과 수분에 미치는 악영향을 설명하고 <b>'촬영 후 디지털 확대'</b> 방식을 대안으로 제시함.</div>
+<div>• <b>안전 가이드라인</b>: 알레르기 증상이 있는 학생은 <b>마스크 착용</b>을 권고하고, 꽃가루가 날리지 않도록 <b>거리를 둔 관찰</b>을 실천하도록 지도함.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 탐구 기능 가이드</div>
+              <div class="box-content"><div>• <b>관찰 기능 비계</b>: 돋보기 사용 시 <u>물체와 렌즈의 거리</u>를 조절하여 초점을 맞추는 <b>조작법을 시연</b>하고, 스마트 기기 활용 시 전문가 자료와 비교하는 <b>정보 윤리</b> 교육 병행.</div>
+<div>• <b>탐구 기록 방법</b>: 직접 만지지 않고도 그림과 사진으로 <b>구조를 상세히 기록</b>하는 과학적 관찰의 <font color="#f59e0b">핵심 기능</font>을 강조함.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-3">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd">
+              학습연계
+            </span>
+            <span class="slide-title">식물의 한살이와 꽃의 구조적 기능의 연속성</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #0369a1">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 3학년 때는 그냥 꽃이 예쁘고 암술, 수술이 있다고만 배웠는데, 꽃가루가 이동해야 씨가 생긴다는 게 신기해요. 그럼 꽃가루받이가 안 되면 식물은 다음 세대로 자손을 못 남기는 건가요?</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 선수 학습 개념</div>
+              <div class="box-content"><div>• <b>선수 학습 개념</b>: 3학년 1학기 '식물의 한살이'에서 배운 <u>식물의 구조(뿌리, 줄기, 잎, 꽃)</u>와 식물이 자라는 <u>기본적인 과정</u>에 대한 이해.</div>
+<div>• <b>연계의 핵심</b>: 단순한 형태 관찰에서 벗어나 <u>생식 기관으로서의 꽃</u>이 갖는 생물학적 목적(종족 번식)으로의 인지적 확장.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 본 수업 연결고리</div>
+              <div class="box-content"><div>• <b>연결고리 강조</b>: 꽃의 각 부분이 단순히 모양이 다른 것이 아니라, <font color="#06b6d4">꽃가루받이</font>라는 기능을 수행하기 위해 진화된 구조임을 명확히 연결.</div>
+<div>• <b>인과관계 설정</b>: '꽃이 피는 이유 = 씨를 만들기 위함'이라는 <font color="#06b6d4">생물학적 목적성</font>을 교육 과정의 핵심 서사로 설정.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 후속 학습 심화 개념</div>
+              <div class="box-content"><div>• <b>후속 학습 심화</b>: 중학교 생물 과정에서 다룰 <u>유성 생식과 무성 생식</u>의 기초 토대로서, 암·수 생식 세포의 결합 개념을 가볍게 예고.</div>
+<div>• <b>통합적 접근</b>: 식물의 한살이 전체 과정에서 꽃이 차지하는 <font color="#06b6d4">전환점(씨앗→싹→잎→꽃→열매→씨앗)</font>의 역할 강조.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 수업 정리 메타질문</div>
+              <div class="box-content"><div>• <b>메타 인지 질문</b>: "꽃가루받이가 이루어지지 않는다면 우리 식탁에 올라오는 과일이나 채소는 어떻게 될까?"와 같은 질문으로 <u>생태계 연결성</u>까지 사고 확장.</div>
+<div>• <b>학습 요약</b>: 식물의 한살이는 <u>꽃가루받이를 통한 씨앗의 탄생</u>이 있어야만 비로소 완성될 수 있음을 정리.</div></div>
+            </div>
+          </div>
+        </div>
+        
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <span class="slide-title">📊 한눈에 보는 교육적 관점별 설계 종합표</span>
+      </div>
+      <div style="overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px;">
+        <table>
+          <thead>
+            <tr>
+              <th>분석 영역</th>
+              <th>분석 주제</th>
+              <th>상황 반응 예시</th>
+              <th>주요 특징 요약</th>
+              <th>핵심 지도 강조점</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+      <tr>
+        <td style="font-weight: 700;">인지적 오개념</td>
+        <td style="font-weight: 600;">꽃의 구조와 정의에 대한 고정관념: '완전화' 중심의 편향된 인식</td>
+        <td style="font-style: italic;"><div>• 선생님, 꽃잎이나 꽃받침이 없으면 예쁘지 않으니까 꽃이 아닌 것 같아요. 그리고 암술과 수술이 다 있어야 진짜 꽃이지, 하나만 있으면 반쪽짜리 아닌가요?</div></td>
+        <td><div>• <b>전형성 편향(Typicality Bias)</b>: 학생들이 교과서에 나오는 복숭아꽃과 같은 <font color="#ef4444">완전화(암술, 수술, 꽃잎, 꽃받침을 모두 갖춘 꽃)</font>만을 '진짜 꽃'의 원형으로 인식하려는 인지적 경향이 강함.</div>
+<div>• <b>기능적 단순화</b>: 꽃의 구조를 생물학적 기능(씨 만들기) 관점이 아닌, 관상용으로서의 <font color="#ef4444">심미적 외형(꽃잎의 유무)</font> 위주로 판단하는 오류를 범함.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>생물학적 정의 강조</b>: 꽃의 핵심 기능은 화려함이 아니라 <font color="#ef4444">'씨를 만드는 것'</font>임을 명확히 하여, 구조의 유무가 아닌 기능의 수행 여부가 '꽃'을 결정함을 강조해야 함.</div>
+<div>• <b>구조적 다양성 인식</b>: 환경과 번식 전략에 따라 암꽃과 수꽃으로 나뉘거나, 꽃잎이 퇴화한 꽃들이 존재함을 사진 자료를 통해 시각적으로 입증해야 함.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">실생활 연결</td>
+        <td style="font-weight: 600;">꽃가루받이 중단이 우리 식탁에 미치는 영향</td>
+        <td style="font-style: italic;"><div>• 벌이 다 없어지면 우리가 좋아하는 딸기나 사과를 영원히 못 먹게 될 것 같아요! 마트에서 파는 과일 값이 엄청 비싸져서 사 먹기 힘들 것 같아요.</div></td>
+        <td><div>• <b>생태계 서비스 인식</b>: 학생들이 평소 당연하게 여기던 <font color="#10b981">과일과 채소의 생산 과정</font>이 곤충의 노동력에 의존하고 있음을 자각하게 합니다.</div>
+<div>• <b>식생활 연계</b>: '내가 좋아하는 음식'이라는 <font color="#10b981">개인적 흥미 요소</font>를 도입하여 과학적 현상을 자신의 삶과 직접 연결합니다.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>꽃가루받이의 필수성</b>: 식물이 씨를 맺기 위한 <font color="#10b981">생물학적 필연성</font>과, 이것이 인간의 식량 자원과 직결된다는 <font color="#10b981">경제적 가치</font>를 동시에 강조합니다.</div>
+<div>• <b>매개자의 역할</b>: 단순히 곤충을 관찰하는 것을 넘어, 생태계 내에서의 <font color="#10b981">상호 의존적 관계</font>를 개념화하는 데 집중합니다.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">탐구 과정 및 안전</td>
+        <td style="font-weight: 600;">식물 관찰 탐구 중 안전한 도구 조작 및 생태적 태도 형성</td>
+        <td style="font-style: italic;"><div>• 선생님, 꽃가루가 돋보기 렌즈에 묻었어요! 꽃이 너무 예뻐서 더 자세히 보려고 가까이 댔는데, 꽃잎이 돋보기에 닿아서 살짝 찢어졌어요.</div></td>
+        <td><div>• <b>근접 관찰의 오류</b>: 돋보기를 꽃에 <u>지나치게 밀착</u>시켜 식물 조직을 손상하거나, 초점을 맞추기 위해 꽃을 꺾어 가져오려는 <b>행동 오류</b>가 빈번함.</div>
+<div>• <b>감각 의존적 탐구</b>: 꽃을 직접 만지거나 냄새를 맡으려는 행동이 <b>알레르기 반응</b> 등 <font color="#f59e0b">안전사고</font>를 유발할 수 있음.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>생명 존중 태도</b>: 식물은 관찰 대상이자 소중한 생명체임을 강조하여 <b>'눈으로 관찰'</b>하는 기본 원칙을 <font color="#f59e0b">사전 교육</font>해야 함.</div>
+<div>• <b>도구 활용 안전</b>: 스마트 기기를 사용할 때 주변 환경을 살피지 않아 이동 중 <b>충돌 사고</b>가 발생하지 않도록 주의 지도해야 함.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">학습 연계성</td>
+        <td style="font-weight: 600;">식물의 한살이와 꽃의 구조적 기능의 연속성</td>
+        <td style="font-style: italic;"><div>• 선생님, 3학년 때는 그냥 꽃이 예쁘고 암술, 수술이 있다고만 배웠는데, 꽃가루가 이동해야 씨가 생긴다는 게 신기해요. 그럼 꽃가루받이가 안 되면 식물은 다음 세대로 자손을 못 남기는 건가요?</div></td>
+        <td><div>• <b>선수 학습 개념</b>: 3학년 1학기 '식물의 한살이'에서 배운 <u>식물의 구조(뿌리, 줄기, 잎, 꽃)</u>와 식물이 자라는 <u>기본적인 과정</u>에 대한 이해.</div>
+<div>• <b>연계의 핵심</b>: 단순한 형태 관찰에서 벗어나 <u>생식 기관으로서의 꽃</u>이 갖는 생물학적 목적(종족 번식)으로의 인지적 확장.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>연결고리 강조</b>: 꽃의 각 부분이 단순히 모양이 다른 것이 아니라, <font color="#06b6d4">꽃가루받이</font>라는 기능을 수행하기 위해 진화된 구조임을 명확히 연결.</div>
+<div>• <b>인과관계 설정</b>: '꽃이 피는 이유 = 씨를 만들기 위함'이라는 <font color="#06b6d4">생물학적 목적성</font>을 교육 과정의 핵심 서사로 설정.</div></td>
+      </tr>
+      
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+
+        <div class="controls">
+          <button class="btn" id="prev-btn" onclick="prevSlide()" disabled>◀ 이전</button>
+          <div class="dots" id="dots-container"></div>
+          <button class="btn btn-next" id="next-btn" onclick="nextSlide()">다음 ▶</button>
+        </div>
+      </div>
+
+      <script>
+        let currentIdx = 0;
+        const totalSlides = 5;
+
+        function updateSlide() {
+          document.querySelectorAll('.slide').forEach((slide, idx) => {
+            if (idx === currentIdx) {
+              slide.classList.add('active');
+            } else {
+              slide.classList.remove('active');
+            }
+          });
+
+          document.getElementById('prev-btn').disabled = currentIdx === 0;
+          
+          const nextBtn = document.getElementById('next-btn');
+          if (currentIdx === totalSlides - 1) {
+            nextBtn.textContent = '종료';
+          } else {
+            nextBtn.textContent = '다음 ▶';
+          }
+
+          document.querySelectorAll('.dot').forEach((dot, idx) => {
+            if (idx === currentIdx) {
+              dot.classList.add('active');
+            } else {
+              dot.classList.remove('active');
+            }
+          });
+        }
+
+        function nextSlide() {
+          if (currentIdx < totalSlides - 1) {
+            currentIdx++;
+            updateSlide();
+          } else {
+            alert('수업 설계 리포트 뷰어가 종료되었습니다.');
+          }
+        }
+
+        function prevSlide() {
+          if (currentIdx > 0) {
+            currentIdx--;
+            updateSlide();
+          }
+        }
+
+        // Generate Dots
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 0; i < totalSlides; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'dot' + (i === 0 ? ' active' : '');
+          dot.onclick = () => { currentIdx = i; updateSlide(); };
+          dotsContainer.appendChild(dot);
+        }
+      </script>
+    </body>
+    </html>
+    

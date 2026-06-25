@@ -1,0 +1,526 @@
+
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>AI 수업 시뮬레이션 대본 큐카드</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          --primary: #3b82f6;
+          --text-main: #1e293b;
+          --bg-main: #f8fafc;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: 'Inter', 'Outfit', sans-serif;
+          background: #0f172a;
+          color: var(--text-main);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          overflow: hidden;
+        }
+        .presentation-container {
+          width: 90%;
+          max-width: 900px;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          border-radius: 20px;
+          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+          padding: 40px;
+          min-height: 520px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .slide {
+          display: none;
+          flex-direction: column;
+          flex: 1;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+          max-height: 420px;
+          overflow-y: auto;
+          padding-right: 4px;
+          padding-top: 15px;
+        }
+        .slide.active {
+          display: flex;
+          opacity: 1;
+        }
+        .binder-holes {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .hole {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          border: 1px solid #94a3b8;
+        }
+        .slide-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border-bottom: 2px solid #e2e8f0;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+        }
+        .badge {
+          padding: 4px 14px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+        }
+        .slide-title {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #0f172a;
+        }
+        .quote-card {
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px 24px;
+          margin-bottom: 20px;
+          position: relative;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+        }
+        .quote-label {
+          position: absolute;
+          top: -10px;
+          left: 20px;
+          background: #f8fafc;
+          padding: 0 8px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #64748b;
+        }
+        .quote-content {
+          font-size: 1.05rem;
+          font-weight: 600;
+          color: #334155;
+          line-height: 1.6;
+          font-style: italic;
+          white-space: pre-wrap;
+        }
+        .grid-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          flex: 1;
+        }
+        .grid-box {
+          border-radius: 10px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .box-1 { background: #f0f9ff; border: 1px solid #e0f2fe; }
+        .box-2 { background: #ecfdf5; border: 1px solid #dcfce7; }
+        .box-3 { background: #fffbeb; border: 1px solid #fef3c7; }
+        .box-4 { background: #faf5ff; border: 1px solid #f3e8ff; }
+        
+        .box-title {
+          font-weight: 700;
+          font-size: 0.88rem;
+          margin-bottom: 8px;
+          padding-bottom: 4px;
+        }
+        .title-1 { color: #0369a1; border-bottom: 1px solid #bae6fd; }
+        .title-2 { color: #15803d; border-bottom: 1px solid #bbf7d0; }
+        .title-3 { color: #b45309; border-bottom: 1px solid #fde68a; }
+        .title-4 { color: #6b21a8; border-bottom: 1px solid #e9d5ff; }
+
+        .box-content {
+          font-size: 0.85rem;
+          line-height: 1.5;
+          overflow-y: auto;
+          flex: 1;
+          white-space: pre-wrap;
+        }
+        .box-content div { margin-bottom: 4px; }
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 0.78rem;
+        }
+        th {
+          background: #f8fafc;
+          border-bottom: 1.5px solid #e2e8f0;
+          padding: 10px;
+          font-weight: 700;
+          color: #475569;
+        }
+        td {
+          padding: 10px;
+          color: #475569;
+          border-bottom: 1px solid #f1f5f9;
+          background: white;
+        }
+        
+        .controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid #e2e8f0;
+          padding-top: 20px;
+          margin-top: 20px;
+        }
+        button.btn {
+          padding: 8px 18px;
+          background: #ffffff;
+          color: #334155;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.2s;
+        }
+        button.btn:disabled {
+          background: #e2e8f0;
+          color: #94a3b8;
+          cursor: not-allowed;
+        }
+        button.btn-next {
+          background: var(--primary);
+          color: white;
+          border: none;
+        }
+        .dots {
+          display: flex;
+          gap: 8px;
+        }
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .dot.active {
+          width: 12px;
+          background: var(--primary);
+        }
+        /* Font size customization */
+        font[size="2"] { font-size: 0.8rem !important; }
+        font[size="3"] { font-size: 0.92rem !important; }
+        font[size="5"] { font-size: 1.15rem !important; }
+      </style>
+    </head>
+    <body>
+      <div class="presentation-container">
+        <div style="position: absolute; top: 15px; right: 20px; font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
+          과목: 과학 | 성취기준: [6과12-01] 하루 동안 태양과 별을 관찰하여 위치 변화의 규칙성을 찾을 수 있다.
+        </div>
+
+        
+        <div class="slide active" id="slide-0">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fff1f2; color: #b91c1c; border: 1px solid #fecaca">
+              오개념
+            </span>
+            <span class="slide-title">지구의 자전과 낮과 밤의 발생 원리에 대한 오개념 분석</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b91c1c">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 지구가 도는 게 아니라 태양이 지구 주위를 돌아서 낮과 밤이 생기는 거 아니에요? 아니면 지구가 멈춰 있고 태양이 우리 눈앞에서 사라졌다가 나타나는 것 같아요!</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 오개념 원인</div>
+              <div class="box-content"><div>• <b>태양 중심적 사고</b>: 학생들은 일상적인 경험(태양이 뜨고 지는 현상)을 바탕으로 <font color="#ef4444">지구는 가만히 있고 태양이 움직인다</font>고 믿는 경향이 강합니다.</div>
+<div>• <b>관찰자 중심의 편향</b>: 지구가 실제로 자전하고 있다는 사실을 추상적으로 이해하기 어려워하며, 자신의 눈에 보이는 시각적 현상을 절대적인 사실로 받아들입니다.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 지도개념</div>
+              <div class="box-content"><div>• <b>상대적 운동의 이해</b>: 지구가 스스로 회전(자전)하고 있음을 인지시키고, <font color="#ef4444">태양 빛을 받는 면과 받지 않는 면</font>의 경계가 낮과 밤을 결정한다는 공간적 개념을 강조해야 합니다.</div>
+<div>• <b>자전축의 기울기 개념 주의</b>: 3학년 수준에서는 '자전축'이 지구의 회전 중심임을 인지하는 것에 집중하고, 계절 변화와 직결되는 기울기 개념은 과도하게 심화하지 않도록 주의합니다.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 피드백/해소설명</div>
+              <div class="box-content"><div>• <b>모형 실험 피드백</b>: 전등(태양)을 고정하고 지구본을 서에서 동으로 돌릴 때, <font color="#ef4444">관찰자 모형이 빛을 받는 구간과 어두운 구간을 통과하는 과정</font>을 직접 손으로 짚어가며 설명하게 합니다.</div>
+<div>• <b>역발상 질문</b>: "만약 지구가 자전하지 않는다면 낮과 밤이 생길까?"라는 질문을 통해 지구 운동의 필요성을 스스로 느끼게 합니다.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 추가 갈등질문</div>
+              <div class="box-content"><div>• <b>인지 갈등 유도</b>: "우리가 탄 기차가 달릴 때 밖의 풍경이 뒤로 가는 것처럼, 지구가 돌기 때문에 태양이 움직이는 것처럼 보이는 것은 아닐까?"라고 질문하여 <font color="#ef4444">상대 운동</font>의 원리를 생각하게 합니다.</div>
+<div>• <b>공간 추론 강화</b>: 우주에서 지구를 내려다보는 시점과 지구 위 관찰자의 시점을 교차하여 생각하는 연습을 시킵니다.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-1">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #ecfdf5; color: #15803d; border: 1px solid #bbf7d0">
+              실생활
+            </span>
+            <span class="slide-title">지구의 자전과 우리 생활의 접점 탐색</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #15803d">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 동쪽에서 해가 빨리 뜨니까 우리나라에서 제일 동쪽인 독도에 가면 가장 먼저 해돋이를 볼 수 있을 것 같아요! 자전하는 방향이 서쪽에서 동쪽이니까, 동쪽이 먼저 태양 빛을 만나는 거 맞죠?</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 일상 연계 소재</div>
+              <div class="box-content"><div>• <b><font color="#10b981">시간과 방위의 관계</font></b>: 지구가 서에서 동으로 자전하기 때문에 동쪽에 위치한 지역이 태양을 먼저 마주하게 된다는 원리를 <font color="#10b981">실생활의 해돋이 시간</font> 차이와 연결합니다.</div>
+<div>• <b><font color="#10b981">공간적 사고력</font></b>: 지구본상의 위치와 태양 빛의 도달 순서를 시각화하여, 우리나라 내에서도 지역별 해 뜨는 시각이 다른 이유를 추론하게 합니다.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 실생활 예시</div>
+              <div class="box-content"><div>• <b><font color="#10b981">관찰자의 시점</font></b>: '내가 지구 위에 서 있는 관찰자'라는 점을 강조하여, 단순히 지구가 도는 것이 아니라 <font color="#10b981">내가 태양 빛 속으로 들어가는 과정</font>으로 이해하도록 유도합니다.</div>
+<div>• <b><font color="#10b981">지리적 호기심</font></b>: 우리나라 지도를 펼쳐놓고 위도보다는 경도(동서 위치)가 해돋이 시각에 미치는 영향을 확인하도록 지도합니다.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 연계 활동/과제</div>
+              <div class="box-content"><div>• <b><font color="#10b981">가정 연계 활동</font></b>: 기상청 날씨누리나 포털 사이트의 '해 뜨는 시각' 정보를 검색하여, 실제 동해안과 서해안의 해돋이 시각 차이를 비교해보는 과제를 제안합니다.</div>
+<div>• <b><font color="#10b981">간이 모형 활용</font></b>: 교실 조명을 태양으로 가정하고, 지구본을 돌리며 '동쪽'이 먼저 밝아지는지 직접 눈으로 확인하는 과정을 반복 수행합니다.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 학문적 왜곡 경계</div>
+              <div class="box-content"><div>• <b><font color="#10b981">학문적 경계 설정</font></b>: 위도(남북 차이)에 따라서도 해 뜨는 시각이 달라질 수 있음을 언급하되, 이번 수업의 핵심은 <font color="#10b981">자전 방향에 따른 경도 차이</font>임을 명확히 하여 학생들의 혼란을 방지합니다.</div>
+<div>• <b><font color="#10b981">심화 질문</font></b>: 만약 지구가 반대 방향(동에서 서)으로 자전한다면 해는 어느 쪽에서 뜰지 질문하여 자전 방향의 중요성을 역으로 강조합니다.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-2">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a">
+              탐구&안전
+            </span>
+            <span class="slide-title">지구본 모형 실험의 조작적 탐구와 안전한 관찰 전략</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b45309">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 전등을 켜고 지구본을 돌리니까 우리 마을 쪽에 빛이 비칠 때는 낮이고, 반대편으로 넘어가니까 깜깜해져서 밤이 되는 게 보여요! 그런데 지구본을 너무 빨리 돌리면 낮과 밤이 너무 자주 바뀌는 것 같아요.</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 조작실수/행동오류</div>
+              <div class="box-content"><div>• <b>조작적 변인 오류</b>: 학생들이 <font color="#f59e0b">지구본 회전 속도</font>를 일정하게 유지하지 못해 낮과 밤의 주기를 실제 하루(24시간)와 연결하지 못하고 단순히 빛이 비추는 현상으로만 인식하는 오류가 발생함.</div>
+<div>• <b>관찰자 시점 혼동</b>: 투명 반구에 붙인 관찰자 모형이 지구본의 회전 방향(서→동)과 일치하지 않게 붙여져, 태양 빛을 받는 순서가 거꾸로 이해되는 상황이 나타날 수 있음.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 핵심 안전 예방책</div>
+              <div class="box-content"><div>• <b>광원 안전 주의</b>: 전등의 열기에 의한 <font color="#ef4444">화상 위험</font>을 반드시 고지하고, 실험 중 전등을 직접 쳐다보지 않도록 하여 눈의 피로와 시력 저하를 예방하는 안전 수칙을 강조해야 함.</div>
+<div>• <b>실험 도구 배치</b>: 지구본과 전등 사이의 거리(30cm)가 일정해야 빛의 밝기가 유지되므로, 조별로 자를 활용해 <font color="#10b981">변인 통제</font>를 정확히 하도록 비계 설정이 필요함.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 오동작 대처/피드백</div>
+              <div class="box-content"><div>• <b>오동작 피드백</b>: 실험 중 낮과 밤이 나타나지 않는다면 지구본의 <font color="#f59e0b">자전축 기울기</font>나 전등의 높이가 관찰자 모형의 위치와 수평을 이루는지 먼저 확인하도록 안내함.</div>
+<div>• <b>탐구 기능 강화</b>: '왜 낮과 밤이 반복될까?'라는 질문에 대해, 단순히 지구가 돌기 때문이 아니라 <font color="#06b6d4">빛을 받는 영역이 고정된 태양 빛에 의해 제한</font>되기 때문임을 관찰 결과와 연결해 설명하도록 함.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 탐구 기능 가이드</div>
+              <div class="box-content"><div>• <b>관찰 가이드</b>: 투명 반구에 붙인 관찰자 모형이 태양 빛을 향해 들어가는 순간(해돋이)과 빛을 등지고 나가는 순간(해넘이)을 구체적으로 포착하도록 <font color="#f59e0b">관찰 일지 기록</font>을 병행함.</div>
+<div>• <b>메타 탐구 질문</b>: 만약 지구가 자전하지 않고 멈춰 있다면 우리 마을에는 어떤 일이 벌어질지 상상해 보게 하여 <font color="#06b6d4">지구 자전의 필연성</font>을 다시 한번 사고하게 함.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-3">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd">
+              학습연계
+            </span>
+            <span class="slide-title">지구의 운동과 천체 관측의 연속적 이해</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #0369a1">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 3학년 때 동쪽에서 해가 뜨고 서쪽으로 진다고 배웠는데, 지구가 서쪽에서 동쪽으로 돌아서 그렇게 보이는 거였군요! 그럼 별자리도 지구가 도니까 시간마다 위치가 바뀌어 보이는 건가요?</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 선수 학습 개념</div>
+              <div class="box-content"><div>• <b>선수 학습 개념</b>: 3학년 과정에서 학습한 <font color="#06b6d4">방위(동, 서, 남, 북)</font> 및 <font color="#06b6d4">낮과 밤의 현상 관찰</font> 경험</div>
+<div>• <b>연계성 핵심</b>: 지구의 자전이라는 <font color="#06b6d4">물리적 원인</font>이 천체의 겉보기 운동(일주 운동)이라는 <font color="#06b6d4">결과</font>를 만들어냄을 인지</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 본 수업 연결고리</div>
+              <div class="box-content"><div>• <b>연결 고리</b>: '지구가 자전한다'는 개념을 단순히 암기하는 것이 아니라, <font color="#06b6d4">관찰자의 위치 변화</font>와 태양 빛의 관계를 통해 3학년 때의 경험을 과학적 원리로 재구성</div>
+<div>• <b>개념 확장</b>: 자전축을 중심으로 회전하는 지구의 모습이 향후 학습할 <font color="#06b6d4">계절 변화(공전)</font>의 기초가 됨을 명시</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 후속 학습 심화 개념</div>
+              <div class="box-content"><div>• <b>후속 학습 연계</b>: 6학년 과정의 '계절의 변화' 및 중학교 '천체의 일주 운동'으로 이어지는 <font color="#06b6d4">교육과정 나선형 구조</font> 설명</div>
+<div>• <b>심화 연결</b>: 별자리의 위치 변화를 이해하기 위해 <font color="#06b6d4">지구의 자전 방향(서→동)</font>을 확실히 각인시키는 시각적 도구 활용</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 수업 정리 메타질문</div>
+              <div class="box-content"><div>• <b>메타 질문</b>: "지구가 지금 자전하고 있는데 우리는 왜 움직임을 느끼지 못할까요?"라는 질문을 통해 <font color="#06b6d4">상대성 원리</font>의 기초 개념 살짝 맛보기</div>
+<div>• <b>요약 질문</b>: "지구의 자전이 멈춘다면 우리 일상에서 낮과 밤은 어떻게 변할지 상상해 볼까요?"</div></div>
+            </div>
+          </div>
+        </div>
+        
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <span class="slide-title">📊 한눈에 보는 교육적 관점별 설계 종합표</span>
+      </div>
+      <div style="overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px;">
+        <table>
+          <thead>
+            <tr>
+              <th>분석 영역</th>
+              <th>분석 주제</th>
+              <th>상황 반응 예시</th>
+              <th>주요 특징 요약</th>
+              <th>핵심 지도 강조점</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+      <tr>
+        <td style="font-weight: 700;">인지적 오개념</td>
+        <td style="font-weight: 600;">지구의 자전과 낮과 밤의 발생 원리에 대한 오개념 분석</td>
+        <td style="font-style: italic;"><div>• 선생님, 지구가 도는 게 아니라 태양이 지구 주위를 돌아서 낮과 밤이 생기는 거 아니에요? 아니면 지구가 멈춰 있고 태양이 우리 눈앞에서 사라졌다가 나타나는 것 같아요!</div></td>
+        <td><div>• <b>태양 중심적 사고</b>: 학생들은 일상적인 경험(태양이 뜨고 지는 현상)을 바탕으로 <font color="#ef4444">지구는 가만히 있고 태양이 움직인다</font>고 믿는 경향이 강합니다.</div>
+<div>• <b>관찰자 중심의 편향</b>: 지구가 실제로 자전하고 있다는 사실을 추상적으로 이해하기 어려워하며, 자신의 눈에 보이는 시각적 현상을 절대적인 사실로 받아들입니다.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>상대적 운동의 이해</b>: 지구가 스스로 회전(자전)하고 있음을 인지시키고, <font color="#ef4444">태양 빛을 받는 면과 받지 않는 면</font>의 경계가 낮과 밤을 결정한다는 공간적 개념을 강조해야 합니다.</div>
+<div>• <b>자전축의 기울기 개념 주의</b>: 3학년 수준에서는 '자전축'이 지구의 회전 중심임을 인지하는 것에 집중하고, 계절 변화와 직결되는 기울기 개념은 과도하게 심화하지 않도록 주의합니다.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">실생활 연결</td>
+        <td style="font-weight: 600;">지구의 자전과 우리 생활의 접점 탐색</td>
+        <td style="font-style: italic;"><div>• 선생님, 동쪽에서 해가 빨리 뜨니까 우리나라에서 제일 동쪽인 독도에 가면 가장 먼저 해돋이를 볼 수 있을 것 같아요! 자전하는 방향이 서쪽에서 동쪽이니까, 동쪽이 먼저 태양 빛을 만나는 거 맞죠?</div></td>
+        <td><div>• <b><font color="#10b981">시간과 방위의 관계</font></b>: 지구가 서에서 동으로 자전하기 때문에 동쪽에 위치한 지역이 태양을 먼저 마주하게 된다는 원리를 <font color="#10b981">실생활의 해돋이 시간</font> 차이와 연결합니다.</div>
+<div>• <b><font color="#10b981">공간적 사고력</font></b>: 지구본상의 위치와 태양 빛의 도달 순서를 시각화하여, 우리나라 내에서도 지역별 해 뜨는 시각이 다른 이유를 추론하게 합니다.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b><font color="#10b981">관찰자의 시점</font></b>: '내가 지구 위에 서 있는 관찰자'라는 점을 강조하여, 단순히 지구가 도는 것이 아니라 <font color="#10b981">내가 태양 빛 속으로 들어가는 과정</font>으로 이해하도록 유도합니다.</div>
+<div>• <b><font color="#10b981">지리적 호기심</font></b>: 우리나라 지도를 펼쳐놓고 위도보다는 경도(동서 위치)가 해돋이 시각에 미치는 영향을 확인하도록 지도합니다.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">탐구 과정 및 안전</td>
+        <td style="font-weight: 600;">지구본 모형 실험의 조작적 탐구와 안전한 관찰 전략</td>
+        <td style="font-style: italic;"><div>• 선생님, 전등을 켜고 지구본을 돌리니까 우리 마을 쪽에 빛이 비칠 때는 낮이고, 반대편으로 넘어가니까 깜깜해져서 밤이 되는 게 보여요! 그런데 지구본을 너무 빨리 돌리면 낮과 밤이 너무 자주 바뀌는 것 같아요.</div></td>
+        <td><div>• <b>조작적 변인 오류</b>: 학생들이 <font color="#f59e0b">지구본 회전 속도</font>를 일정하게 유지하지 못해 낮과 밤의 주기를 실제 하루(24시간)와 연결하지 못하고 단순히 빛이 비추는 현상으로만 인식하는 오류가 발생함.</div>
+<div>• <b>관찰자 시점 혼동</b>: 투명 반구에 붙인 관찰자 모형이 지구본의 회전 방향(서→동)과 일치하지 않게 붙여져, 태양 빛을 받는 순서가 거꾸로 이해되는 상황이 나타날 수 있음.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>광원 안전 주의</b>: 전등의 열기에 의한 <font color="#ef4444">화상 위험</font>을 반드시 고지하고, 실험 중 전등을 직접 쳐다보지 않도록 하여 눈의 피로와 시력 저하를 예방하는 안전 수칙을 강조해야 함.</div>
+<div>• <b>실험 도구 배치</b>: 지구본과 전등 사이의 거리(30cm)가 일정해야 빛의 밝기가 유지되므로, 조별로 자를 활용해 <font color="#10b981">변인 통제</font>를 정확히 하도록 비계 설정이 필요함.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">학습 연계성</td>
+        <td style="font-weight: 600;">지구의 운동과 천체 관측의 연속적 이해</td>
+        <td style="font-style: italic;"><div>• 선생님, 3학년 때 동쪽에서 해가 뜨고 서쪽으로 진다고 배웠는데, 지구가 서쪽에서 동쪽으로 돌아서 그렇게 보이는 거였군요! 그럼 별자리도 지구가 도니까 시간마다 위치가 바뀌어 보이는 건가요?</div></td>
+        <td><div>• <b>선수 학습 개념</b>: 3학년 과정에서 학습한 <font color="#06b6d4">방위(동, 서, 남, 북)</font> 및 <font color="#06b6d4">낮과 밤의 현상 관찰</font> 경험</div>
+<div>• <b>연계성 핵심</b>: 지구의 자전이라는 <font color="#06b6d4">물리적 원인</font>이 천체의 겉보기 운동(일주 운동)이라는 <font color="#06b6d4">결과</font>를 만들어냄을 인지</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>연결 고리</b>: '지구가 자전한다'는 개념을 단순히 암기하는 것이 아니라, <font color="#06b6d4">관찰자의 위치 변화</font>와 태양 빛의 관계를 통해 3학년 때의 경험을 과학적 원리로 재구성</div>
+<div>• <b>개념 확장</b>: 자전축을 중심으로 회전하는 지구의 모습이 향후 학습할 <font color="#06b6d4">계절 변화(공전)</font>의 기초가 됨을 명시</div></td>
+      </tr>
+      
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+
+        <div class="controls">
+          <button class="btn" id="prev-btn" onclick="prevSlide()" disabled>◀ 이전</button>
+          <div class="dots" id="dots-container"></div>
+          <button class="btn btn-next" id="next-btn" onclick="nextSlide()">다음 ▶</button>
+        </div>
+      </div>
+
+      <script>
+        let currentIdx = 0;
+        const totalSlides = 5;
+
+        function updateSlide() {
+          document.querySelectorAll('.slide').forEach((slide, idx) => {
+            if (idx === currentIdx) {
+              slide.classList.add('active');
+            } else {
+              slide.classList.remove('active');
+            }
+          });
+
+          document.getElementById('prev-btn').disabled = currentIdx === 0;
+          
+          const nextBtn = document.getElementById('next-btn');
+          if (currentIdx === totalSlides - 1) {
+            nextBtn.textContent = '종료';
+          } else {
+            nextBtn.textContent = '다음 ▶';
+          }
+
+          document.querySelectorAll('.dot').forEach((dot, idx) => {
+            if (idx === currentIdx) {
+              dot.classList.add('active');
+            } else {
+              dot.classList.remove('active');
+            }
+          });
+        }
+
+        function nextSlide() {
+          if (currentIdx < totalSlides - 1) {
+            currentIdx++;
+            updateSlide();
+          } else {
+            alert('수업 설계 리포트 뷰어가 종료되었습니다.');
+          }
+        }
+
+        function prevSlide() {
+          if (currentIdx > 0) {
+            currentIdx--;
+            updateSlide();
+          }
+        }
+
+        // Generate Dots
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 0; i < totalSlides; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'dot' + (i === 0 ? ' active' : '');
+          dot.onclick = () => { currentIdx = i; updateSlide(); };
+          dotsContainer.appendChild(dot);
+        }
+      </script>
+    </body>
+    </html>
+    

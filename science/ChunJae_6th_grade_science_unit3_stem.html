@@ -1,0 +1,525 @@
+
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>AI 수업 시뮬레이션 대본 큐카드</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          --primary: #3b82f6;
+          --text-main: #1e293b;
+          --bg-main: #f8fafc;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: 'Inter', 'Outfit', sans-serif;
+          background: #0f172a;
+          color: var(--text-main);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          overflow: hidden;
+        }
+        .presentation-container {
+          width: 90%;
+          max-width: 900px;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          border-radius: 20px;
+          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+          padding: 40px;
+          min-height: 520px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .slide {
+          display: none;
+          flex-direction: column;
+          flex: 1;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+          max-height: 420px;
+          overflow-y: auto;
+          padding-right: 4px;
+          padding-top: 15px;
+        }
+        .slide.active {
+          display: flex;
+          opacity: 1;
+        }
+        .binder-holes {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .hole {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          border: 1px solid #94a3b8;
+        }
+        .slide-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border-bottom: 2px solid #e2e8f0;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+        }
+        .badge {
+          padding: 4px 14px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+        }
+        .slide-title {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #0f172a;
+        }
+        .quote-card {
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px 24px;
+          margin-bottom: 20px;
+          position: relative;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+        }
+        .quote-label {
+          position: absolute;
+          top: -10px;
+          left: 20px;
+          background: #f8fafc;
+          padding: 0 8px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #64748b;
+        }
+        .quote-content {
+          font-size: 1.05rem;
+          font-weight: 600;
+          color: #334155;
+          line-height: 1.6;
+          font-style: italic;
+          white-space: pre-wrap;
+        }
+        .grid-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          flex: 1;
+        }
+        .grid-box {
+          border-radius: 10px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .box-1 { background: #f0f9ff; border: 1px solid #e0f2fe; }
+        .box-2 { background: #ecfdf5; border: 1px solid #dcfce7; }
+        .box-3 { background: #fffbeb; border: 1px solid #fef3c7; }
+        .box-4 { background: #faf5ff; border: 1px solid #f3e8ff; }
+        
+        .box-title {
+          font-weight: 700;
+          font-size: 0.88rem;
+          margin-bottom: 8px;
+          padding-bottom: 4px;
+        }
+        .title-1 { color: #0369a1; border-bottom: 1px solid #bae6fd; }
+        .title-2 { color: #15803d; border-bottom: 1px solid #bbf7d0; }
+        .title-3 { color: #b45309; border-bottom: 1px solid #fde68a; }
+        .title-4 { color: #6b21a8; border-bottom: 1px solid #e9d5ff; }
+
+        .box-content {
+          font-size: 0.85rem;
+          line-height: 1.5;
+          overflow-y: auto;
+          flex: 1;
+          white-space: pre-wrap;
+        }
+        .box-content div { margin-bottom: 4px; }
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 0.78rem;
+        }
+        th {
+          background: #f8fafc;
+          border-bottom: 1.5px solid #e2e8f0;
+          padding: 10px;
+          font-weight: 700;
+          color: #475569;
+        }
+        td {
+          padding: 10px;
+          color: #475569;
+          border-bottom: 1px solid #f1f5f9;
+          background: white;
+        }
+        
+        .controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid #e2e8f0;
+          padding-top: 20px;
+          margin-top: 20px;
+        }
+        button.btn {
+          padding: 8px 18px;
+          background: #ffffff;
+          color: #334155;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.2s;
+        }
+        button.btn:disabled {
+          background: #e2e8f0;
+          color: #94a3b8;
+          cursor: not-allowed;
+        }
+        button.btn-next {
+          background: var(--primary);
+          color: white;
+          border: none;
+        }
+        .dots {
+          display: flex;
+          gap: 8px;
+        }
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .dot.active {
+          width: 12px;
+          background: var(--primary);
+        }
+        /* Font size customization */
+        font[size="2"] { font-size: 0.8rem !important; }
+        font[size="3"] { font-size: 0.92rem !important; }
+        font[size="5"] { font-size: 1.15rem !important; }
+      </style>
+    </head>
+    <body>
+      <div class="presentation-container">
+        <div style="position: absolute; top: 15px; right: 20px; font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
+          과목: 과학 | 성취기준: [6과11-02] 식물의 각 기관의 구조를 관찰하고, 기능을 알아보는 실험을 수행하여 식물 각 기관의 구조와 기능을 설명할 수 있다.
+        </div>
+
+        
+        <div class="slide active" id="slide-0">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fff1f2; color: #b91c1c; border: 1px solid #fecaca">
+              오개념
+            </span>
+            <span class="slide-title">식물 줄기의 기능에 대한 목적론적 오개념 분석</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b91c1c">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 줄기가 옆으로 기어가는 건 그냥 식물이 자라다가 힘들어서 쉬려고 그런 거 아닐까요? 아니면 감자는 그냥 땅속에 있어서 뿌리랑 헷갈려서 뚱뚱해진 거 같아요.</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 오개념 원인</div>
+              <div class="box-content"><div>• <b>목적론적 사고</b>: 식물의 생존 전략을 <font color="#ef4444">의인화</font>하여, 식물이 스스로 의지를 가지고 '힘들어서' 혹은 '편하려고' 형태를 바꾼다고 오해함.</div>
+<div>• <b>형태적 분류 오류</b>: '땅속에 있으면 무조건 뿌리'라는 <font color="#ef4444">고정관념</font> 때문에 감자와 같은 변형 줄기를 뿌리의 일종으로 범주화함.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 지도개념</div>
+              <div class="box-content"><div>• <b>통로의 개념</b>: 줄기는 단순히 지지대가 아니라, 뿌리와 잎을 연결하는 <font color="#ef4444">물질 이동의 고속도로</font>임을 강조해야 함.</div>
+<div>• <b>환경 적응의 결과</b>: 형태 변화는 의지가 아닌, 종의 <font color="#ef4444">생존과 번식에 유리한 방향</font>으로 진화된 결과임을 명확히 함.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 피드백/해소설명</div>
+              <div class="box-content"><div>• <b>관찰 피드백</b>: 감자의 눈(싹)이 나는 위치가 일반적인 뿌리에서는 나타나지 않는 <font color="#ef4444">줄기 특유의 마디 구조</font>임을 시각적으로 비교해줌.</div>
+<div>• <b>개념 교정</b>: '줄기=위로 자람'이라는 기존 인식을 깨고, <font color="#ef4444">'줄기=식물의 마디와 잎이 달리는 축'</font>이라는 정의를 재확인함.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 추가 갈등질문</div>
+              <div class="box-content"><div>• <b>인지 갈등 질문</b>: "만약 감자가 뿌리라면 왜 싹이 줄기처럼 마디에서 나올까?"와 같은 질문으로 <font color="#ef4444">구조적 증거</font>를 찾게 유도함.</div>
+<div>• <b>연계 탐구</b>: 양파(잎이 변형)와 감자(줄기가 변형), 고구마(뿌리가 변형)를 비교하며 <font color="#ef4444">식물 기관의 다양성</font>을 심화 학습함.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-1">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #ecfdf5; color: #15803d; border: 1px solid #bbf7d0">
+              실생활
+            </span>
+            <span class="slide-title">식탁 위에서 찾는 식물 줄기의 구조와 기능</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #15803d">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 우리가 먹는 아스파라거스나 미나리는 줄기가 길쭉해서 물을 이동시키는 통로가 잘 보일 것 같아요! 감자는 땅속에 있는데 줄기라고 하니까 신기해요.</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 일상 연계 소재</div>
+              <div class="box-content"><div>• <b><font color="#10b981">식재료의 구조적 탐색</font></b>: 학생들이 평소 먹는 채소를 관찰하여 <u>식물의 기관</u>과 <u>먹는 부위</u>를 연결하는 인지적 가교 형성</div>
+<div>• <b><font color="#10b981">다양한 줄기 형태의 발견</font></b>: 곧은줄기(미나리, 아스파라거스), 양분 저장 줄기(감자, 연근) 등 <u>실생활 예시</u>를 통한 개념 구체화</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 실생활 예시</div>
+              <div class="box-content"><div>• <b><font color="#10b981">기능적 연결성 강조</font></b>: 단순히 먹는 부위라는 점을 넘어, 그 식물이 <u>물과 양분을 이동시키거나 저장하는 역할</u>을 어떻게 수행하는지 연결</div>
+<div>• <b><font color="#10b981">형태적 다양성 이해</font></b>: 땅 위에 있는 줄기와 땅속에 있는 줄기(변형 줄기)의 <u>시각적 차이</u>를 명확히 구분</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 연계 활동/과제</div>
+              <div class="box-content"><div>• <b><font color="#10b981">식재료 관찰 과제</font></b>: 집에 있는 대파, 미나리, 연근 등을 얇게 썰어 <u>물관의 흔적</u>을 직접 확인해보는 가정 연계 활동 제안</div>
+<div>• <b><font color="#10b981">식탁 퀴즈 활동</font></b>: '오늘 저녁 반찬 중 줄기를 먹는 것은 무엇일까?'와 같은 질문으로 <u>지속적인 관찰 습관</u> 유도</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 학문적 왜곡 경계</div>
+              <div class="box-content"><div>• <b><font color="#10b981">학문적 경계 설정</font></b>: 감자(줄기)와 고구마(뿌리)처럼 겉모습이 비슷해도 <u>식물학적 기원</u>이 다를 수 있음을 언급하여 오류 방지</div>
+<div>• <b><font color="#10b981">분류의 한계 명시</font></b>: 모든 식물이 줄기의 기능만을 수행하는 것은 아니며, <u>환경에 적응하기 위해 변형된 형태</u>가 존재함을 설명</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-2">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a">
+              탐구&안전
+            </span>
+            <span class="slide-title">식물 줄기 관찰을 위한 정밀 절단 도구 조작 및 안전 가이드</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b45309">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 줄기가 너무 부드러워서 칼로 누르면 뭉개져요! 그냥 툭 자르면 단면이 찌그러져서 통로가 어디 있는지 잘 안 보여요.</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 조작실수/행동오류</div>
+              <div class="box-content"><div>• <b>조작 미숙</b>: 줄기를 고정하지 않고 한 손으로 잡고 자르려다 <font color="#f59e0b">손가락 베임 사고</font> 위험 발생</div>
+<div>• <b>힘 조절 실패</b>: 연한 식물 조직을 강하게 압박하여 세포 구조가 파괴되는 <font color="#f59e0b">관찰 오류</font> 발생</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 핵심 안전 예방책</div>
+              <div class="box-content"><div>• <b>안전한 도구 사용</b>: 유리판 위에서 칼날을 몸 바깥쪽으로 향하게 하여 자르는 <font color="#f59e0b">안전 수칙</font> 강조</div>
+<div>• <b>관찰의 정확성</b>: 단면을 최대한 얇고 평평하게 잘라야 <font color="#f59e0b">물 이동 통로(관다발)</font>를 명확히 식별할 수 있음을 지도</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 오동작 대처/피드백</div>
+              <div class="box-content"><div>• <b>피드백 방안</b>: 단면이 뭉개졌다면 다시 자르기보다, <font color="#f59e0b">핀셋으로 조직을 살짝 떼어내는 방식</font>으로 관찰 유도</div>
+<div>• <b>원인 규명</b>: 색소 물이 단면에 고르게 퍼지지 않았다면 <font color="#f59e0b">시간 경과 부족</font> 혹은 줄기 끝의 기포 유입 가능성 확인</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 탐구 기능 가이드</div>
+              <div class="box-content"><div>• <b>조작 가이드</b>: 줄기를 자를 때 <font color="#f59e0b">밀듯이 가볍게</font> 자르는 기술을 시연하고, 돋보기 사용 시 초점 거리를 맞추는 법 안내</div>
+<div>• <b>변인 통제</b>: 모든 모둠이 동일한 길이와 굵기의 줄기를 사용하도록 하여 <font color="#f59e0b">실험 결과의 객관성</font> 확보</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-3">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd">
+              학습연계
+            </span>
+            <span class="slide-title">식물 구조의 '생김새'에서 '기능적 역할'로의 개념 확장</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #0369a1">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 3학년 때는 그냥 줄기가 굵거나 얇은 것만 봤는데, 이번엔 왜 물이 이동하는 통로가 필요한지 궁금해요!</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 선수 학습 개념</div>
+              <div class="box-content"><div>• <b>선수 학습 개념</b>: 3학년 1학기 <식물의 한살이>에서 다룬 <font color="#06b6d4">식물의 생김새(뿌리, 줄기, 잎, 꽃의 모양)</font> 관찰 경험</div>
+<div>• <b>인지적 발달 단계</b>: 단순히 외형을 분류하던 수준에서 <font color="#06b6d4">구조와 기능의 관계</font>를 인과적으로 추론하는 논리적 사고로의 전환</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 본 수업 연결고리</div>
+              <div class="box-content"><div>• <b>연결고리 강조</b>: 3학년 때 관찰한 '다양한 줄기 모양'이 왜 그렇게 진화했는지(지지, 이동, 저장)를 <font color="#06b6d4">생존 전략</font>과 연계하여 설명</div>
+<div>• <b>핵심 개념 연결</b>: '줄기'라는 물리적 객체를 <font color="#06b6d4">물과 양분의 이동 통로</font>라는 기능적 시스템으로 재정의</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 후속 학습 심화 개념</div>
+              <div class="box-content"><div>• <b>후속 학습 심화</b>: 중학교 과정의 <font color="#06b6d4">증산 작용 및 광합성</font> 원리로 이어지는 기초 토대 마련</div>
+<div>• <b>피드백 전략</b>: '줄기가 없다면?'이라는 가정적 질문을 통해 <font color="#06b6d4">뿌리-줄기-잎의 유기적 연결성</font>을 체감하도록 유도</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 수업 정리 메타질문</div>
+              <div class="box-content"><div>• <b>메타 질문</b>: "식물의 각 부분은 왜 서로 연결되어 있어야만 할까?"라는 질문으로 <font color="#06b6d4">식물의 전체적인 통합성</font> 강조</div></div>
+            </div>
+          </div>
+        </div>
+        
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <span class="slide-title">📊 한눈에 보는 교육적 관점별 설계 종합표</span>
+      </div>
+      <div style="overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px;">
+        <table>
+          <thead>
+            <tr>
+              <th>분석 영역</th>
+              <th>분석 주제</th>
+              <th>상황 반응 예시</th>
+              <th>주요 특징 요약</th>
+              <th>핵심 지도 강조점</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+      <tr>
+        <td style="font-weight: 700;">인지적 오개념</td>
+        <td style="font-weight: 600;">식물 줄기의 기능에 대한 목적론적 오개념 분석</td>
+        <td style="font-style: italic;"><div>• 줄기가 옆으로 기어가는 건 그냥 식물이 자라다가 힘들어서 쉬려고 그런 거 아닐까요? 아니면 감자는 그냥 땅속에 있어서 뿌리랑 헷갈려서 뚱뚱해진 거 같아요.</div></td>
+        <td><div>• <b>목적론적 사고</b>: 식물의 생존 전략을 <font color="#ef4444">의인화</font>하여, 식물이 스스로 의지를 가지고 '힘들어서' 혹은 '편하려고' 형태를 바꾼다고 오해함.</div>
+<div>• <b>형태적 분류 오류</b>: '땅속에 있으면 무조건 뿌리'라는 <font color="#ef4444">고정관념</font> 때문에 감자와 같은 변형 줄기를 뿌리의 일종으로 범주화함.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>통로의 개념</b>: 줄기는 단순히 지지대가 아니라, 뿌리와 잎을 연결하는 <font color="#ef4444">물질 이동의 고속도로</font>임을 강조해야 함.</div>
+<div>• <b>환경 적응의 결과</b>: 형태 변화는 의지가 아닌, 종의 <font color="#ef4444">생존과 번식에 유리한 방향</font>으로 진화된 결과임을 명확히 함.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">실생활 연결</td>
+        <td style="font-weight: 600;">식탁 위에서 찾는 식물 줄기의 구조와 기능</td>
+        <td style="font-style: italic;"><div>• 선생님, 우리가 먹는 아스파라거스나 미나리는 줄기가 길쭉해서 물을 이동시키는 통로가 잘 보일 것 같아요! 감자는 땅속에 있는데 줄기라고 하니까 신기해요.</div></td>
+        <td><div>• <b><font color="#10b981">식재료의 구조적 탐색</font></b>: 학생들이 평소 먹는 채소를 관찰하여 <u>식물의 기관</u>과 <u>먹는 부위</u>를 연결하는 인지적 가교 형성</div>
+<div>• <b><font color="#10b981">다양한 줄기 형태의 발견</font></b>: 곧은줄기(미나리, 아스파라거스), 양분 저장 줄기(감자, 연근) 등 <u>실생활 예시</u>를 통한 개념 구체화</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b><font color="#10b981">기능적 연결성 강조</font></b>: 단순히 먹는 부위라는 점을 넘어, 그 식물이 <u>물과 양분을 이동시키거나 저장하는 역할</u>을 어떻게 수행하는지 연결</div>
+<div>• <b><font color="#10b981">형태적 다양성 이해</font></b>: 땅 위에 있는 줄기와 땅속에 있는 줄기(변형 줄기)의 <u>시각적 차이</u>를 명확히 구분</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">탐구 과정 및 안전</td>
+        <td style="font-weight: 600;">식물 줄기 관찰을 위한 정밀 절단 도구 조작 및 안전 가이드</td>
+        <td style="font-style: italic;"><div>• 선생님, 줄기가 너무 부드러워서 칼로 누르면 뭉개져요! 그냥 툭 자르면 단면이 찌그러져서 통로가 어디 있는지 잘 안 보여요.</div></td>
+        <td><div>• <b>조작 미숙</b>: 줄기를 고정하지 않고 한 손으로 잡고 자르려다 <font color="#f59e0b">손가락 베임 사고</font> 위험 발생</div>
+<div>• <b>힘 조절 실패</b>: 연한 식물 조직을 강하게 압박하여 세포 구조가 파괴되는 <font color="#f59e0b">관찰 오류</font> 발생</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>안전한 도구 사용</b>: 유리판 위에서 칼날을 몸 바깥쪽으로 향하게 하여 자르는 <font color="#f59e0b">안전 수칙</font> 강조</div>
+<div>• <b>관찰의 정확성</b>: 단면을 최대한 얇고 평평하게 잘라야 <font color="#f59e0b">물 이동 통로(관다발)</font>를 명확히 식별할 수 있음을 지도</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">학습 연계성</td>
+        <td style="font-weight: 600;">식물 구조의 '생김새'에서 '기능적 역할'로의 개념 확장</td>
+        <td style="font-style: italic;"><div>• 선생님, 3학년 때는 그냥 줄기가 굵거나 얇은 것만 봤는데, 이번엔 왜 물이 이동하는 통로가 필요한지 궁금해요!</div></td>
+        <td><div>• <b>선수 학습 개념</b>: 3학년 1학기 <식물의 한살이>에서 다룬 <font color="#06b6d4">식물의 생김새(뿌리, 줄기, 잎, 꽃의 모양)</font> 관찰 경험</div>
+<div>• <b>인지적 발달 단계</b>: 단순히 외형을 분류하던 수준에서 <font color="#06b6d4">구조와 기능의 관계</font>를 인과적으로 추론하는 논리적 사고로의 전환</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>연결고리 강조</b>: 3학년 때 관찰한 '다양한 줄기 모양'이 왜 그렇게 진화했는지(지지, 이동, 저장)를 <font color="#06b6d4">생존 전략</font>과 연계하여 설명</div>
+<div>• <b>핵심 개념 연결</b>: '줄기'라는 물리적 객체를 <font color="#06b6d4">물과 양분의 이동 통로</font>라는 기능적 시스템으로 재정의</div></td>
+      </tr>
+      
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+
+        <div class="controls">
+          <button class="btn" id="prev-btn" onclick="prevSlide()" disabled>◀ 이전</button>
+          <div class="dots" id="dots-container"></div>
+          <button class="btn btn-next" id="next-btn" onclick="nextSlide()">다음 ▶</button>
+        </div>
+      </div>
+
+      <script>
+        let currentIdx = 0;
+        const totalSlides = 5;
+
+        function updateSlide() {
+          document.querySelectorAll('.slide').forEach((slide, idx) => {
+            if (idx === currentIdx) {
+              slide.classList.add('active');
+            } else {
+              slide.classList.remove('active');
+            }
+          });
+
+          document.getElementById('prev-btn').disabled = currentIdx === 0;
+          
+          const nextBtn = document.getElementById('next-btn');
+          if (currentIdx === totalSlides - 1) {
+            nextBtn.textContent = '종료';
+          } else {
+            nextBtn.textContent = '다음 ▶';
+          }
+
+          document.querySelectorAll('.dot').forEach((dot, idx) => {
+            if (idx === currentIdx) {
+              dot.classList.add('active');
+            } else {
+              dot.classList.remove('active');
+            }
+          });
+        }
+
+        function nextSlide() {
+          if (currentIdx < totalSlides - 1) {
+            currentIdx++;
+            updateSlide();
+          } else {
+            alert('수업 설계 리포트 뷰어가 종료되었습니다.');
+          }
+        }
+
+        function prevSlide() {
+          if (currentIdx > 0) {
+            currentIdx--;
+            updateSlide();
+          }
+        }
+
+        // Generate Dots
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 0; i < totalSlides; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'dot' + (i === 0 ? ' active' : '');
+          dot.onclick = () => { currentIdx = i; updateSlide(); };
+          dotsContainer.appendChild(dot);
+        }
+      </script>
+    </body>
+    </html>
+    

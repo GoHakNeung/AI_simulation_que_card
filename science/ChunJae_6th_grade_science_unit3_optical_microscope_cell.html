@@ -1,0 +1,456 @@
+
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>AI 수업 시뮬레이션 대본 큐카드</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          --primary: #3b82f6;
+          --text-main: #1e293b;
+          --bg-main: #f8fafc;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: 'Inter', 'Outfit', sans-serif;
+          background: #0f172a;
+          color: var(--text-main);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          overflow: hidden;
+        }
+        .presentation-container {
+          width: 90%;
+          max-width: 900px;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          border-radius: 20px;
+          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+          padding: 40px;
+          min-height: 520px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .slide {
+          display: none;
+          flex-direction: column;
+          flex: 1;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+          max-height: 420px;
+          overflow-y: auto;
+          padding-right: 4px;
+          padding-top: 15px;
+        }
+        .slide.active {
+          display: flex;
+          opacity: 1;
+        }
+        .binder-holes {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .hole {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          border: 1px solid #94a3b8;
+        }
+        .slide-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border-bottom: 2px solid #e2e8f0;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+        }
+        .badge {
+          padding: 4px 14px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+        }
+        .slide-title {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #0f172a;
+        }
+        .quote-card {
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px 24px;
+          margin-bottom: 20px;
+          position: relative;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+        }
+        .quote-label {
+          position: absolute;
+          top: -10px;
+          left: 20px;
+          background: #f8fafc;
+          padding: 0 8px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #64748b;
+        }
+        .quote-content {
+          font-size: 1.05rem;
+          font-weight: 600;
+          color: #334155;
+          line-height: 1.6;
+          font-style: italic;
+          white-space: pre-wrap;
+        }
+        .grid-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          flex: 1;
+        }
+        .grid-box {
+          border-radius: 10px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .box-1 { background: #f0f9ff; border: 1px solid #e0f2fe; }
+        .box-2 { background: #ecfdf5; border: 1px solid #dcfce7; }
+        .box-3 { background: #fffbeb; border: 1px solid #fef3c7; }
+        .box-4 { background: #faf5ff; border: 1px solid #f3e8ff; }
+        
+        .box-title {
+          font-weight: 700;
+          font-size: 0.88rem;
+          margin-bottom: 8px;
+          padding-bottom: 4px;
+        }
+        .title-1 { color: #0369a1; border-bottom: 1px solid #bae6fd; }
+        .title-2 { color: #15803d; border-bottom: 1px solid #bbf7d0; }
+        .title-3 { color: #b45309; border-bottom: 1px solid #fde68a; }
+        .title-4 { color: #6b21a8; border-bottom: 1px solid #e9d5ff; }
+
+        .box-content {
+          font-size: 0.85rem;
+          line-height: 1.5;
+          overflow-y: auto;
+          flex: 1;
+          white-space: pre-wrap;
+        }
+        .box-content div { margin-bottom: 4px; }
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 0.78rem;
+        }
+        th {
+          background: #f8fafc;
+          border-bottom: 1.5px solid #e2e8f0;
+          padding: 10px;
+          font-weight: 700;
+          color: #475569;
+        }
+        td {
+          padding: 10px;
+          color: #475569;
+          border-bottom: 1px solid #f1f5f9;
+          background: white;
+        }
+        
+        .controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid #e2e8f0;
+          padding-top: 20px;
+          margin-top: 20px;
+        }
+        button.btn {
+          padding: 8px 18px;
+          background: #ffffff;
+          color: #334155;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.2s;
+        }
+        button.btn:disabled {
+          background: #e2e8f0;
+          color: #94a3b8;
+          cursor: not-allowed;
+        }
+        button.btn-next {
+          background: var(--primary);
+          color: white;
+          border: none;
+        }
+        .dots {
+          display: flex;
+          gap: 8px;
+        }
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .dot.active {
+          width: 12px;
+          background: var(--primary);
+        }
+        /* Font size customization */
+        font[size="2"] { font-size: 0.8rem !important; }
+        font[size="3"] { font-size: 0.92rem !important; }
+        font[size="5"] { font-size: 1.15rem !important; }
+      </style>
+    </head>
+    <body>
+      <div class="presentation-container">
+        <div style="position: absolute; top: 15px; right: 20px; font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
+          과목: 과학 | 성취기준: [6과11-01] 생물을 이루고 있는 기본 단위인 세포를 현미경으로 관찰할 수 있다.
+        </div>
+
+        
+        <div class="slide active" id="slide-0">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fff1f2; color: #b91c1c; border: 1px solid #fecaca">
+              오개념
+            </span>
+            <span class="slide-title">생물의 미시적 구성 단위에 대한 오개념</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b91c1c">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 음... 저는 그냥 우리 몸이 살로 꽉 차 있는 줄 알았어요. 그렇게 작은 조각들로 되어있을 거라고는 생각 못했어요.</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 오개념 원인</div>
+              <div class="box-content"><div>• 일상생활에서 생물을 하나의 덩어리(예: 사람, 나무)로 인지하는 경험에 국한되어 미시적 구성 단위의 존재를 상상하기 어려움.</div><div>• 눈에 보이지 않는 작은 세계에 대한 구체적인 시각 정보가 부족하여, 막연하게 '작다'는 개념만 가질 뿐, 특정 형태나 기능적 단위로 이루어져 있다는 생각을 하기 어려움.</div><div>• 생물을 구성하는 단위 역시 '살아있는 것'이라는 인식이 부족하여, 단순한 물질적 구성 요소(예: 블록)와 혼동할 수 있음.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 지도개념</div>
+              <div class="box-content"><div>• 생물이 겉보기에는 하나의 덩어리 같지만, 실제로는 <b>눈에 보이지 않는 아주 작은 '세포'라는 단위</b>로 이루어져 있음을 강조.</div><div>• 세포가 단순히 작은 조각이 아니라, 생명 활동을 하는<b> '살아있는' 기본 단위</b>임을 인지하도록 지도.</div><div><br></div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 피드백/해소설명</div>
+              <div class="box-content"><div>• <b>블록 장난감</b>이나 건물을 짓는 <b>벽돌</b> 비유를 활용하여, 큰 덩어리가 작은 단위로 이루어져 있다는 개념을 시각적으로 설명하고, 이 작은 단위들이 모여 더 큰 구조와 기능을 만든다고 비유적으로 설명한다.</div><div>• "생물은 세포로 이루어져 있어요. 이 세포 하나하나가 살아있는 작은 집이라고 생각하면 돼요."와 같이 구체적인 비유를 들어 세포의 '살아있는' 특성을 강조한다.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 추가 갈등질문</div>
+              <div class="box-content"><div><span style="font-size: 0.82rem;">• "만약 우리 몸이 하나의 거대한 세포로만 이루어져 있다면 어떤 점이 불편할까?"와 같이 비현실적인 상황을 가정하여 세포가 모여 복잡한 생명 활동을 하는 이유에 대해 생각해보게 한다.</span></div><div>• "우리 몸의 세포와 식물의 세포는 어떻게 다를까? 또 어떤 부분이 같을까?"와 같이 비교 질문을 통해 세포의 다양성과 공통점을 탐색하도록 유도.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-1">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #ecfdf5; color: #15803d; border: 1px solid #bbf7d0">
+              실생활
+            </span>
+            <span class="slide-title">현미경으로 보는 일상 속 작은 세상 발견</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #15803d">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 음... 제 손바닥에 있는 지문이요! 아니면 머리카락 끝이나 벌레 다리 같은 거요!</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 일상 연계 소재</div>
+              <div class="box-content"><div>• 일상 속 친숙한 사물의 미시적 구조에 대한 호기심을 자극합니다.</div><div>• 눈으로 볼 수 없었던 미지의 세계를 탐험하는 듯한 흥미를 유발합니다.</div><div>• 돋보기 사용 경험을 현미경으로 확장하며 과학적 도구의 유용성을 인식하게 합니다.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 실생활 예시</div>
+              <div class="box-content"><div>• 일상 사물도 미세한 구조로 이루어져 있음을 인지하도록 돕습니다.</div><div>• 현미경이 <b>육안으로 관찰 불가능한 세부 구조</b>를 보여주는 과학 도구임을 강조합니다.</div><div>• 이후 생물이 세포로 이루어져 있다는 핵심 개념으로 자연스럽게 연결될 수 있도록 유도합니다.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 연계 활동/과제</div>
+              <div class="box-content"><div><span style="font-size: 0.82rem;">• 스마트 기기를 활용하여 일상 속 사물(식품, 먼지 등)의 현미경 사진 찾아보기</span></div><div><br></div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 학문적 왜곡 경계</div>
+              <div class="box-content"><div>• 실제 <b>현미경 관찰에 적합한 대상</b>(얇고 투명한 표본)과 <b>단순히 확대해서 볼 수 있는 대상</b>(두껍거나 불투명한 물체)의 차이를 명확히 설명해야 합니다.</div><div>• 단순히 확대하는 것을 넘어 생물의<b> '세포'라는 기본 단위 관찰</b>로 심화될 수 있도록 지도 방향을 설정해야 합니다.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-2">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a">
+              탐구&안전
+            </span>
+            <span class="slide-title">현미경 조작 시 저배율 사용 및 렌즈-표본 충돌 방지</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b45309">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 학생 1: "제일 낮은 배율로 해야 넓게 보여서 찾기 쉬울 것 같아요."</div><div>• 학생 2: "옆에서 보면서 렌즈를 표본에 거의 닿을 때까지 내린 다음에, 접안렌즈 보면서 천천히 올리면 안 부딪힐 것 같아요!"</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 조작실수/행동오류</div>
+              <div class="box-content"><div>• 현미경 조작 시 고배율 렌즈부터 사용하여 관찰 대상을 찾지 못하거나, 초점 조절 중 표본과 렌즈가 충돌하는 경우.</div><div>• 조동 나사를 조작할 때 접안렌즈만 보면서 대물렌즈를 내리다가 표본이나 렌즈를 손상시키는 실수.</div><div>• 렌즈나 표본 이동 나사를 과도하게 돌려 미세 조절이 어렵거나 부품이 손상될 위험.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 핵심 안전 예방책</div>
+              <div class="box-content"><div>• 현미경 사용 전, 반드시 <b>가장 낮은 배율의 대물렌즈</b>를 중앙에 오도록 맞추는 것이 중요함을 강조.</div><div>• 대물렌즈를 표본에 가깝게 내릴 때는 반드시 옆에서 보면서 조작하고, 접안렌즈를 보며 초점을 맞출 때는 대물렌즈를 위로 올리면서 조절하는 안전 수칙을 명확히 안내.</div><div>• 현미경은 정밀 기기이므로 조심스럽게 다루고, 렌즈나 표본에 직접 손대지 않도록 주의를 환기.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 오동작 대처/피드백</div>
+              <div class="box-content"><div>• 관찰 대상이 보이지 않을 경우, <b>"가장 낮은 배율로 되어 있는지, 조명은 켜져 있는지, 표본이 대물렌즈 아래에 정확히 놓여 있는지"</b> 순서대로 점검하도록 유도.</div><div>• 초점이 잘 맞지 않을 때는<b> "조동 나사로 크게 움직여보고 미동 나사로 미세하게 조절하는 방법"</b>을 다시 시연하며 올바른 조작법을 상기시킴.</div><div>• 학생들이 렌즈를 표본 쪽으로 내리면서 접안렌즈를 보는 실수를 할 경우, 즉시 중단시키고 "왜 옆에서 보면서 내려야 하는지" 안전상의 이유를 다시 설명하여 인지하도록 함.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 탐구 기능 가이드</div>
+              <div class="box-content"><div>• 저배율에서 관찰 대상을 찾은 후, 원하는 부분을 중앙에 놓고 고배율로 전환하는 방법을 단계별로 시연하고 연습시킴.</div><div>• 현미경 조작 시 양손을 사용하여 안정적으로 조절하도록 안내하고, 특히 조동 나사와 미동 나사를 돌릴 때 한 손은 현미경 받침대를 잡는 등 흔들림을 최소화하는 자세를 지도.</div><div>• 관찰 시 한쪽 눈은 접안렌즈를 보고 다른 쪽 눈은 뜨는 연습을 시켜 자연스러운 관찰 습관을 형성하도록 돕고, 장시간 관찰 시 눈의 피로를 줄이는 방법을 안내.</div></div>
+            </div>
+          </div>
+        </div>
+        
+    <div class="slide" id="slide-3">
+      <div class="slide-header">
+        <span class="slide-title">📊 한눈에 보는 교육적 관점별 설계 종합표</span>
+      </div>
+      <div style="overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px;">
+        <table>
+          <thead>
+            <tr>
+              <th>분석 영역</th>
+              <th>분석 주제</th>
+              <th>상황 반응 예시</th>
+              <th>주요 특징 요약</th>
+              <th>핵심 지도 강조점</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+      <tr>
+        <td style="font-weight: 700;">인지적 오개념</td>
+        <td style="font-weight: 600;">생물의 미시적 구성 단위에 대한 오개념</td>
+        <td style="font-style: italic;"><div>• 음... 저는 그냥 우리 몸이 살로 꽉 차 있는 줄 알았어요. 그렇게 작은 조각들로 되어있을 거라고는 생각 못했어요.</div></td>
+        <td><div>• 일상생활에서 생물을 하나의 덩어리(예: 사람, 나무)로 인지하는 경험에 국한되어 미시적 구성 단위의 존재를 상상하기 어려움.</div><div>• 눈에 보이지 않는 작은 세계에 대한 구체적인 시각 정보가 부족하여, 막연하게 '작다'는 개념만 가질 뿐, 특정 형태나 기능적 단위로 이루어져 있다는 생각을 하기 어려움.</div><div>• 생물을 구성하는 단위 역시 '살아있는 것'이라는 인식이 부족하여, 단순한 물질적 구성 요소(예: 블록)와 혼동할 수 있음.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• 생물이 겉보기에는 하나의 덩어리 같지만, 실제로는 <b>눈에 보이지 않는 아주 작은 '세포'라는 단위</b>로 이루어져 있음을 강조.</div><div>• 세포가 단순히 작은 조각이 아니라, 생명 활동을 하는<b> '살아있는' 기본 단위</b>임을 인지하도록 지도.</div><div><br></div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">실생활 연결</td>
+        <td style="font-weight: 600;">현미경으로 보는 일상 속 작은 세상 발견</td>
+        <td style="font-style: italic;"><div>• 음... 제 손바닥에 있는 지문이요! 아니면 머리카락 끝이나 벌레 다리 같은 거요!</div></td>
+        <td><div>• 일상 속 친숙한 사물의 미시적 구조에 대한 호기심을 자극합니다.</div><div>• 눈으로 볼 수 없었던 미지의 세계를 탐험하는 듯한 흥미를 유발합니다.</div><div>• 돋보기 사용 경험을 현미경으로 확장하며 과학적 도구의 유용성을 인식하게 합니다.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• 일상 사물도 미세한 구조로 이루어져 있음을 인지하도록 돕습니다.</div><div>• 현미경이 <b>육안으로 관찰 불가능한 세부 구조</b>를 보여주는 과학 도구임을 강조합니다.</div><div>• 이후 생물이 세포로 이루어져 있다는 핵심 개념으로 자연스럽게 연결될 수 있도록 유도합니다.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">탐구 과정 및 안전</td>
+        <td style="font-weight: 600;">현미경 조작 시 저배율 사용 및 렌즈-표본 충돌 방지</td>
+        <td style="font-style: italic;"><div>• 학생 1: "제일 낮은 배율로 해야 넓게 보여서 찾기 쉬울 것 같아요."</div><div>• 학생 2: "옆에서 보면서 렌즈를 표본에 거의 닿을 때까지 내린 다음에, 접안렌즈 보면서 천천히 올리면 안 부딪힐 것 같아요!"</div></td>
+        <td><div>• 현미경 조작 시 고배율 렌즈부터 사용하여 관찰 대상을 찾지 못하거나, 초점 조절 중 표본과 렌즈가 충돌하는 경우.</div><div>• 조동 나사를 조작할 때 접안렌즈만 보면서 대물렌즈를 내리다가 표본이나 렌즈를 손상시키는 실수.</div><div>• 렌즈나 표본 이동 나사를 과도하게 돌려 미세 조절이 어렵거나 부품이 손상될 위험.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• 현미경 사용 전, 반드시 <b>가장 낮은 배율의 대물렌즈</b>를 중앙에 오도록 맞추는 것이 중요함을 강조.</div><div>• 대물렌즈를 표본에 가깝게 내릴 때는 반드시 옆에서 보면서 조작하고, 접안렌즈를 보며 초점을 맞출 때는 대물렌즈를 위로 올리면서 조절하는 안전 수칙을 명확히 안내.</div><div>• 현미경은 정밀 기기이므로 조심스럽게 다루고, 렌즈나 표본에 직접 손대지 않도록 주의를 환기.</div></td>
+      </tr>
+      
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+
+        <div class="controls">
+          <button class="btn" id="prev-btn" onclick="prevSlide()" disabled>◀ 이전</button>
+          <div class="dots" id="dots-container"></div>
+          <button class="btn btn-next" id="next-btn" onclick="nextSlide()">다음 ▶</button>
+        </div>
+      </div>
+
+      <script>
+        let currentIdx = 0;
+        const totalSlides = 4;
+
+        function updateSlide() {
+          document.querySelectorAll('.slide').forEach((slide, idx) => {
+            if (idx === currentIdx) {
+              slide.classList.add('active');
+            } else {
+              slide.classList.remove('active');
+            }
+          });
+
+          document.getElementById('prev-btn').disabled = currentIdx === 0;
+          
+          const nextBtn = document.getElementById('next-btn');
+          if (currentIdx === totalSlides - 1) {
+            nextBtn.textContent = '종료';
+          } else {
+            nextBtn.textContent = '다음 ▶';
+          }
+
+          document.querySelectorAll('.dot').forEach((dot, idx) => {
+            if (idx === currentIdx) {
+              dot.classList.add('active');
+            } else {
+              dot.classList.remove('active');
+            }
+          });
+        }
+
+        function nextSlide() {
+          if (currentIdx < totalSlides - 1) {
+            currentIdx++;
+            updateSlide();
+          } else {
+            alert('수업 설계 리포트 뷰어가 종료되었습니다.');
+          }
+        }
+
+        function prevSlide() {
+          if (currentIdx > 0) {
+            currentIdx--;
+            updateSlide();
+          }
+        }
+
+        // Generate Dots
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 0; i < totalSlides; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'dot' + (i === 0 ? ' active' : '');
+          dot.onclick = () => { currentIdx = i; updateSlide(); };
+          dotsContainer.appendChild(dot);
+        }
+      </script>
+    </body>
+    </html>
+    

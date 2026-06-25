@@ -1,0 +1,523 @@
+
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>AI 수업 시뮬레이션 대본 큐카드</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          --primary: #3b82f6;
+          --text-main: #1e293b;
+          --bg-main: #f8fafc;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: 'Inter', 'Outfit', sans-serif;
+          background: #0f172a;
+          color: var(--text-main);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          overflow: hidden;
+        }
+        .presentation-container {
+          width: 90%;
+          max-width: 900px;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          border-radius: 20px;
+          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+          padding: 40px;
+          min-height: 520px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .slide {
+          display: none;
+          flex-direction: column;
+          flex: 1;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+          max-height: 420px;
+          overflow-y: auto;
+          padding-right: 4px;
+          padding-top: 15px;
+        }
+        .slide.active {
+          display: flex;
+          opacity: 1;
+        }
+        .binder-holes {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .hole {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          border: 1px solid #94a3b8;
+        }
+        .slide-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border-bottom: 2px solid #e2e8f0;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+        }
+        .badge {
+          padding: 4px 14px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+        }
+        .slide-title {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #0f172a;
+        }
+        .quote-card {
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px 24px;
+          margin-bottom: 20px;
+          position: relative;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+        }
+        .quote-label {
+          position: absolute;
+          top: -10px;
+          left: 20px;
+          background: #f8fafc;
+          padding: 0 8px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #64748b;
+        }
+        .quote-content {
+          font-size: 1.05rem;
+          font-weight: 600;
+          color: #334155;
+          line-height: 1.6;
+          font-style: italic;
+          white-space: pre-wrap;
+        }
+        .grid-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          flex: 1;
+        }
+        .grid-box {
+          border-radius: 10px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .box-1 { background: #f0f9ff; border: 1px solid #e0f2fe; }
+        .box-2 { background: #ecfdf5; border: 1px solid #dcfce7; }
+        .box-3 { background: #fffbeb; border: 1px solid #fef3c7; }
+        .box-4 { background: #faf5ff; border: 1px solid #f3e8ff; }
+        
+        .box-title {
+          font-weight: 700;
+          font-size: 0.88rem;
+          margin-bottom: 8px;
+          padding-bottom: 4px;
+        }
+        .title-1 { color: #0369a1; border-bottom: 1px solid #bae6fd; }
+        .title-2 { color: #15803d; border-bottom: 1px solid #bbf7d0; }
+        .title-3 { color: #b45309; border-bottom: 1px solid #fde68a; }
+        .title-4 { color: #6b21a8; border-bottom: 1px solid #e9d5ff; }
+
+        .box-content {
+          font-size: 0.85rem;
+          line-height: 1.5;
+          overflow-y: auto;
+          flex: 1;
+          white-space: pre-wrap;
+        }
+        .box-content div { margin-bottom: 4px; }
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 0.78rem;
+        }
+        th {
+          background: #f8fafc;
+          border-bottom: 1.5px solid #e2e8f0;
+          padding: 10px;
+          font-weight: 700;
+          color: #475569;
+        }
+        td {
+          padding: 10px;
+          color: #475569;
+          border-bottom: 1px solid #f1f5f9;
+          background: white;
+        }
+        
+        .controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid #e2e8f0;
+          padding-top: 20px;
+          margin-top: 20px;
+        }
+        button.btn {
+          padding: 8px 18px;
+          background: #ffffff;
+          color: #334155;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.2s;
+        }
+        button.btn:disabled {
+          background: #e2e8f0;
+          color: #94a3b8;
+          cursor: not-allowed;
+        }
+        button.btn-next {
+          background: var(--primary);
+          color: white;
+          border: none;
+        }
+        .dots {
+          display: flex;
+          gap: 8px;
+        }
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .dot.active {
+          width: 12px;
+          background: var(--primary);
+        }
+        /* Font size customization */
+        font[size="2"] { font-size: 0.8rem !important; }
+        font[size="3"] { font-size: 0.92rem !important; }
+        font[size="5"] { font-size: 1.15rem !important; }
+      </style>
+    </head>
+    <body>
+      <div class="presentation-container">
+        <div style="position: absolute; top: 15px; right: 20px; font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
+          과목: 과학 | 성취기준: [6과11-02] 식물의 각 기관의 구조를 관찰하고, 기능을 알아보는 실험을 수행하여 식물 각 기관의 구조와 기능을 설명할 수 있다.
+        </div>
+
+        
+        <div class="slide active" id="slide-0">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fff1f2; color: #b91c1c; border: 1px solid #fecaca">
+              오개념
+            </span>
+            <span class="slide-title">식물의 증산 작용에 대한 의인화 및 생성 개념 오해</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b91c1c">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 식물도 사람처럼 더우면 땀을 흘리는 거 아닐까요? 아니면 비닐봉지 안에서 식물이 스스로 물을 만들어낸 것 같아요!</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 오개념 원인</div>
+              <div class="box-content"><div>• <b>의인화된 사고</b>: 학생들은 생명체인 식물을 동물과 동일시하여 <u>땀(배설)</u>과 <u>증산 작용(수분 방출)</u>의 차이를 구분하지 못함.</div>
+<div>• <b>무에서 유의 창조</b>: 물질 보존 법칙에 대한 이해 부족으로, 비닐 안의 물이 식물 내부에서 새로 <u>'생성'</u>되었다고 믿는 경향이 강함.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 지도개념</div>
+              <div class="box-content"><div>• <b><font color="#ef4444">기공의 역할</font></b>: 물이 단순히 새어 나오는 것이 아니라, 잎 뒷면의 작은 구멍인 <font color="#ef4444">기공</font>을 통해 수증기 형태로 나가는 물리적 이동임을 강조.</div>
+<div>• <b><font color="#ef4444">이동의 연속성</font></b>: 뿌리에서 흡수된 물이 줄기를 지나 잎까지 <u>'이동'</u>하여 나가는 과정임을 시각화하여 설명.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 피드백/해소설명</div>
+              <div class="box-content"><div>• <b>대조 실험 제시</b>: 잎이 없는 식물과 잎이 있는 식물을 비교하여, 물방울이 맺히는 주체가 <u>'잎'</u>임을 스스로 발견하게 유도.</div>
+<div>• <b>질문 전략</b>: '식물이 물을 만들 능력이 있다면 왜 뿌리에서 물을 흡수할까?'와 같은 역질문으로 <u>에너지 보존</u>적 사고 자극.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 추가 갈등질문</div>
+              <div class="box-content"><div>• <b>인지 갈등 유도</b>: '만약 비닐봉지 안에 잎을 넣지 않고 줄기만 넣었다면 어떻게 될까?'라는 질문으로 증산 작용의 <u>주요 기관</u>이 잎임을 재확인.</div>
+<div>• <b>과학적 용어 정립</b>: '땀'이라는 표현 대신 식물의 <u>'수분 배출'</u> 혹은 <u>'증산 작용'</u>이라는 용어를 사용하도록 지속적인 교정 피드백 제공.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-1">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #ecfdf5; color: #15803d; border: 1px solid #bbf7d0">
+              실생활
+            </span>
+            <span class="slide-title">식물의 증산 작용과 일상 속 습도 조절의 상관관계</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #15803d">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 우리 집 거실에 있는 화분 잎에서 물이 나와서 공기 중으로 퍼지니까 방 안이 덜 건조해지는 것 같아요!</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 일상 연계 소재</div>
+              <div class="box-content"><div>• <b>일상 속 관찰력</b>: <font color="#10b981">가습기</font> 대신 화분을 사용하는 사례를 통해 식물의 생리 현상을 친숙하게 인식함</div>
+<div>• <b>현상 인식</b>: 눈에 보이지 않는 <font color="#10b981">수증기</font>가 공기 중으로 이동하여 습도를 높인다는 과학적 원리를 실생활과 연결함</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 강조할 실생활 예시</div>
+              <div class="box-content"><div>• <b>개념의 핵심</b>: 식물의 <font color="#10b981">증산 작용</font>이 단순한 물의 방출이 아니라, 주변 환경의 <font color="#10b981">습도 조절</font>에 기여하는 능동적인 현상임을 강조</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 연계 활동/과제</div>
+              <div class="box-content"><div>• <b>활동 제안</b>: 교실 내 식물 유무에 따른 습도 측정 실험이나, 식물 잎에 묻은 먼지를 닦아주는 활동을 통해 <font color="#10b981">기공</font>의 중요성 체감</div>
+<div>• <b>가정 연계</b>: 집안 내 식물 배치 장소와 습도 변화를 관찰하는 <font color="#10b981">탐구 일지</font> 작성 과제 부여</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 학문적 왜곡 경계</div>
+              <div class="box-content"><div>• <b>학문적 경계</b>: 식물이 습도를 높이는 것은 사실이나, <font color="#10b981">공기청정기</font>와 같은 미세먼지 제거 기능과는 다른 원리임을 구분하여 지도</div>
+<div>• <b>주의점</b>: 식물을 너무 많이 배치할 경우 밤 시간대 <font color="#10b981">호흡 작용</font>으로 인한 산소 소모 가능성도 함께 언급하여 균형 잡힌 시각 제공</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-2">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a">
+              탐구&안전
+            </span>
+            <span class="slide-title">증산 작용 실험의 변인 통제와 안전한 도구 조작</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #b45309">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 비닐봉지 안이 너무 습해서 물방울이 맺힌 것 같아요! 식물이 땀을 흘리는 건가요?</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 조작실수/행동오류</div>
+              <div class="box-content"><div>• <b>조작 실수 요인</b>: 봉지 입구를 제대로 묶지 않아 <font color="#f59e0b">외부 공기 유입</font>으로 인한 결로 현상을 실험 결과로 오인하는 경우가 많음.</div>
+<div>• <b>안전 관리 미흡</b>: 유리 재질의 삼각 플라스크를 다룰 때 <font color="#f59e0b">파손 위험</font>과 날카로운 가위 사용 시 안전 부주의 발생 가능성.</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 핵심 안전 예방책</div>
+              <div class="box-content"><div>• <b>변인 통제 강조</b>: 실험 결과의 원인이 식물인지 외부 환경인지 구분하기 위해 <font color="#f59e0b">밀폐의 중요성</font>을 반드시 사전 교육해야 함.</div>
+<div>• <b>안전 수칙 준수</b>: 유리 기구 파손 시 즉시 교사에게 알리고, <font color="#f59e0b">뒷정리까지가 실험의 과정</font>임을 강조해야 함.</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 오동작 대처/피드백</div>
+              <div class="box-content"><div>• <b>오동작 피드백</b>: 물방울이 생기지 않을 경우, 빵 끈이 꽉 묶였는지 확인하고 <font color="#f59e0b">대조군(식물이 없는 플라스크)</font>과 비교하여 원인을 분석하도록 유도함.</div>
+<div>• <b>비계 설정</b>: 학생들이 스스로 '왜 틈새를 막아야 하는지' 질문하게 하여 <font color="#f59e0b">변인 통제의 논리적 근거</font>를 스스로 깨닫게 함.</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 탐구 기능 가이드</div>
+              <div class="box-content"><div>• <b>관찰 가이드</b>: 잎의 앞면과 뒷면 중 어디에 물방울이 더 많이 맺히는지 관찰하게 하여 <font color="#f59e0b">기공의 분포 차이</font>를 탐구하도록 확장함.</div>
+<div>• <b>기록 습관</b>: 실험 설계 단계부터 <font color="#f59e0b">변인 통제표(같게 할 조건/다르게 할 조건)</font>를 작성하게 하여 탐구 역량을 강화함.</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="slide " id="slide-3">
+          <div class="binder-holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+          </div>
+          <div class="slide-header">
+            <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd">
+              학습연계
+            </span>
+            <span class="slide-title">식물의 구조와 기능의 연속적 이해: 뿌리에서 잎까지의 물 이동 경로</span>
+          </div>
+          
+          <div class="quote-card" style="border-left: 5px solid #0369a1">
+            <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+            <div class="quote-content"><div>• 선생님, 3학년 때 식물은 뿌리로 물을 먹는다고 배웠는데, 그럼 그 물이 어떻게 높은 곳에 있는 잎까지 올라갈 수 있는 거예요? 비닐봉지에 물방울이 맺힌 걸 보니 잎이 물을 밖으로 뿜어내는 것 같아요!</div></div>
+          </div>
+
+          <div class="grid-container">
+            <div class="grid-box box-1">
+              <div class="box-title title-1">📝 선수 학습 개념</div>
+              <div class="box-content"><div>• <b>선수 학습 개념</b>: 3학년 과정에서 배운 식물의 <font color="#06b6d4">기본 구조(뿌리, 줄기, 잎)</font>와 각 기관이 식물 생존에 기여한다는 기초적 사실 확인</div>
+<div>• <b>학습의 연결 고리</b>: 뿌리에서 흡수된 물이 줄기를 지나 잎으로 이동한다는 <font color="#06b6d4">물 이동의 연속성</font>에 대한 인지적 토대 마련</div></div>
+            </div>
+            <div class="grid-box box-2">
+              <div class="box-title title-2">🎯 본 수업 연결고리</div>
+              <div class="box-content"><div>• <b>핵심 연결 고리</b>: 뿌리(흡수) → 줄기(이동) → 잎(증산)으로 이어지는 <font color="#06b6d4">식물 내 물의 흐름(Flow)</font>을 하나의 시스템으로 인식하도록 유도</div>
+<div>• <b>개념의 확장</b>: 단순한 구조 관찰을 넘어 <font color="#06b6d4">기능적 협력 관계</font>(뿌리와 잎의 상호작용)를 강조함</div></div>
+            </div>
+            <div class="grid-box box-3">
+              <div class="box-title title-3">🩹 후속 학습 심화 개념</div>
+              <div class="box-content"><div>• <b>심화 연결(중학 과정)</b>: 중학교 과정에서 다룰 <font color="#06b6d4">물관과 체관의 구조</font> 및 <font color="#06b6d4">광합성 원리</font>의 기초가 되는 '증산 작용'의 중요성 설명</div>
+<div>• <b>통합적 사고</b>: 식물이 왜 잎에서 물을 내보내는지(온도 조절 및 물 상승 원동력)를 뿌리의 흡수 기능과 연결하여 피드백</div></div>
+            </div>
+            <div class="grid-box box-4">
+              <div class="box-title title-4">💡 수업 정리 메타질문</div>
+              <div class="box-content"><div>• <b>메타 질문</b>: <font color="#06b6d4">"만약 잎에서 증산 작용이 일어나지 않는다면, 뿌리에서 흡수한 물은 줄기를 타고 계속 올라올 수 있을까?"</font>라는 질문을 통해 식물 전체의 생리적 연계성 확인</div></div>
+            </div>
+          </div>
+        </div>
+        
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <span class="slide-title">📊 한눈에 보는 교육적 관점별 설계 종합표</span>
+      </div>
+      <div style="overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px;">
+        <table>
+          <thead>
+            <tr>
+              <th>분석 영역</th>
+              <th>분석 주제</th>
+              <th>상황 반응 예시</th>
+              <th>주요 특징 요약</th>
+              <th>핵심 지도 강조점</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+      <tr>
+        <td style="font-weight: 700;">인지적 오개념</td>
+        <td style="font-weight: 600;">식물의 증산 작용에 대한 의인화 및 생성 개념 오해</td>
+        <td style="font-style: italic;"><div>• 선생님, 식물도 사람처럼 더우면 땀을 흘리는 거 아닐까요? 아니면 비닐봉지 안에서 식물이 스스로 물을 만들어낸 것 같아요!</div></td>
+        <td><div>• <b>의인화된 사고</b>: 학생들은 생명체인 식물을 동물과 동일시하여 <u>땀(배설)</u>과 <u>증산 작용(수분 방출)</u>의 차이를 구분하지 못함.</div>
+<div>• <b>무에서 유의 창조</b>: 물질 보존 법칙에 대한 이해 부족으로, 비닐 안의 물이 식물 내부에서 새로 <u>'생성'</u>되었다고 믿는 경향이 강함.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b><font color="#ef4444">기공의 역할</font></b>: 물이 단순히 새어 나오는 것이 아니라, 잎 뒷면의 작은 구멍인 <font color="#ef4444">기공</font>을 통해 수증기 형태로 나가는 물리적 이동임을 강조.</div>
+<div>• <b><font color="#ef4444">이동의 연속성</font></b>: 뿌리에서 흡수된 물이 줄기를 지나 잎까지 <u>'이동'</u>하여 나가는 과정임을 시각화하여 설명.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">실생활 연결</td>
+        <td style="font-weight: 600;">식물의 증산 작용과 일상 속 습도 조절의 상관관계</td>
+        <td style="font-style: italic;"><div>• 선생님, 우리 집 거실에 있는 화분 잎에서 물이 나와서 공기 중으로 퍼지니까 방 안이 덜 건조해지는 것 같아요!</div></td>
+        <td><div>• <b>일상 속 관찰력</b>: <font color="#10b981">가습기</font> 대신 화분을 사용하는 사례를 통해 식물의 생리 현상을 친숙하게 인식함</div>
+<div>• <b>현상 인식</b>: 눈에 보이지 않는 <font color="#10b981">수증기</font>가 공기 중으로 이동하여 습도를 높인다는 과학적 원리를 실생활과 연결함</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>개념의 핵심</b>: 식물의 <font color="#10b981">증산 작용</font>이 단순한 물의 방출이 아니라, 주변 환경의 <font color="#10b981">습도 조절</font>에 기여하는 능동적인 현상임을 강조</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">탐구 과정 및 안전</td>
+        <td style="font-weight: 600;">증산 작용 실험의 변인 통제와 안전한 도구 조작</td>
+        <td style="font-style: italic;"><div>• 선생님, 비닐봉지 안이 너무 습해서 물방울이 맺힌 것 같아요! 식물이 땀을 흘리는 건가요?</div></td>
+        <td><div>• <b>조작 실수 요인</b>: 봉지 입구를 제대로 묶지 않아 <font color="#f59e0b">외부 공기 유입</font>으로 인한 결로 현상을 실험 결과로 오인하는 경우가 많음.</div>
+<div>• <b>안전 관리 미흡</b>: 유리 재질의 삼각 플라스크를 다룰 때 <font color="#f59e0b">파손 위험</font>과 날카로운 가위 사용 시 안전 부주의 발생 가능성.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>변인 통제 강조</b>: 실험 결과의 원인이 식물인지 외부 환경인지 구분하기 위해 <font color="#f59e0b">밀폐의 중요성</font>을 반드시 사전 교육해야 함.</div>
+<div>• <b>안전 수칙 준수</b>: 유리 기구 파손 시 즉시 교사에게 알리고, <font color="#f59e0b">뒷정리까지가 실험의 과정</font>임을 강조해야 함.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">학습 연계성</td>
+        <td style="font-weight: 600;">식물의 구조와 기능의 연속적 이해: 뿌리에서 잎까지의 물 이동 경로</td>
+        <td style="font-style: italic;"><div>• 선생님, 3학년 때 식물은 뿌리로 물을 먹는다고 배웠는데, 그럼 그 물이 어떻게 높은 곳에 있는 잎까지 올라갈 수 있는 거예요? 비닐봉지에 물방울이 맺힌 걸 보니 잎이 물을 밖으로 뿜어내는 것 같아요!</div></td>
+        <td><div>• <b>선수 학습 개념</b>: 3학년 과정에서 배운 식물의 <font color="#06b6d4">기본 구조(뿌리, 줄기, 잎)</font>와 각 기관이 식물 생존에 기여한다는 기초적 사실 확인</div>
+<div>• <b>학습의 연결 고리</b>: 뿌리에서 흡수된 물이 줄기를 지나 잎으로 이동한다는 <font color="#06b6d4">물 이동의 연속성</font>에 대한 인지적 토대 마련</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>핵심 연결 고리</b>: 뿌리(흡수) → 줄기(이동) → 잎(증산)으로 이어지는 <font color="#06b6d4">식물 내 물의 흐름(Flow)</font>을 하나의 시스템으로 인식하도록 유도</div>
+<div>• <b>개념의 확장</b>: 단순한 구조 관찰을 넘어 <font color="#06b6d4">기능적 협력 관계</font>(뿌리와 잎의 상호작용)를 강조함</div></td>
+      </tr>
+      
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+
+        <div class="controls">
+          <button class="btn" id="prev-btn" onclick="prevSlide()" disabled>◀ 이전</button>
+          <div class="dots" id="dots-container"></div>
+          <button class="btn btn-next" id="next-btn" onclick="nextSlide()">다음 ▶</button>
+        </div>
+      </div>
+
+      <script>
+        let currentIdx = 0;
+        const totalSlides = 5;
+
+        function updateSlide() {
+          document.querySelectorAll('.slide').forEach((slide, idx) => {
+            if (idx === currentIdx) {
+              slide.classList.add('active');
+            } else {
+              slide.classList.remove('active');
+            }
+          });
+
+          document.getElementById('prev-btn').disabled = currentIdx === 0;
+          
+          const nextBtn = document.getElementById('next-btn');
+          if (currentIdx === totalSlides - 1) {
+            nextBtn.textContent = '종료';
+          } else {
+            nextBtn.textContent = '다음 ▶';
+          }
+
+          document.querySelectorAll('.dot').forEach((dot, idx) => {
+            if (idx === currentIdx) {
+              dot.classList.add('active');
+            } else {
+              dot.classList.remove('active');
+            }
+          });
+        }
+
+        function nextSlide() {
+          if (currentIdx < totalSlides - 1) {
+            currentIdx++;
+            updateSlide();
+          } else {
+            alert('수업 설계 리포트 뷰어가 종료되었습니다.');
+          }
+        }
+
+        function prevSlide() {
+          if (currentIdx > 0) {
+            currentIdx--;
+            updateSlide();
+          }
+        }
+
+        // Generate Dots
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 0; i < totalSlides; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'dot' + (i === 0 ? ' active' : '');
+          dot.onclick = () => { currentIdx = i; updateSlide(); };
+          dotsContainer.appendChild(dot);
+        }
+      </script>
+    </body>
+    </html>
+    

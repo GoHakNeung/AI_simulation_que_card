@@ -1,0 +1,530 @@
+
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>AI 수업 시뮬레이션 대본 큐카드</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          --primary: #3b82f6;
+          --text-main: #1e293b;
+          --bg-main: #f8fafc;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: 'Inter', 'Outfit', sans-serif;
+          background: #0f172a;
+          color: var(--text-main);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          overflow: hidden;
+        }
+        .presentation-container {
+          width: 90%;
+          max-width: 900px;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          border-radius: 20px;
+          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+          padding: 40px;
+          min-height: 520px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .slide {
+          display: none;
+          flex-direction: column;
+          flex: 1;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+          max-height: 420px;
+          overflow-y: auto;
+          padding-right: 4px;
+          padding-top: 15px;
+        }
+        .slide.active {
+          display: flex;
+          opacity: 1;
+        }
+        .binder-holes {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .hole {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          border: 1px solid #94a3b8;
+        }
+        .slide-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border-bottom: 2px solid #e2e8f0;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+        }
+        .badge {
+          padding: 4px 14px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+        }
+        .slide-title {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #0f172a;
+        }
+        .quote-card {
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px 24px;
+          margin-bottom: 20px;
+          position: relative;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+        }
+        .quote-label {
+          position: absolute;
+          top: -10px;
+          left: 20px;
+          background: #f8fafc;
+          padding: 0 8px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #64748b;
+        }
+        .quote-content {
+          font-size: 1.05rem;
+          font-weight: 600;
+          color: #334155;
+          line-height: 1.6;
+          font-style: italic;
+          white-space: pre-wrap;
+        }
+        .grid-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          flex: 1;
+        }
+        .grid-box {
+          border-radius: 10px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .box-1 { background: #f0f9ff; border: 1px solid #e0f2fe; }
+        .box-2 { background: #ecfdf5; border: 1px solid #dcfce7; }
+        .box-3 { background: #fffbeb; border: 1px solid #fef3c7; }
+        .box-4 { background: #faf5ff; border: 1px solid #f3e8ff; }
+        
+        .box-title {
+          font-weight: 700;
+          font-size: 0.88rem;
+          margin-bottom: 8px;
+          padding-bottom: 4px;
+        }
+        .title-1 { color: #0369a1; border-bottom: 1px solid #bae6fd; }
+        .title-2 { color: #15803d; border-bottom: 1px solid #bbf7d0; }
+        .title-3 { color: #b45309; border-bottom: 1px solid #fde68a; }
+        .title-4 { color: #6b21a8; border-bottom: 1px solid #e9d5ff; }
+
+        .box-content {
+          font-size: 0.85rem;
+          line-height: 1.5;
+          overflow-y: auto;
+          flex: 1;
+          white-space: pre-wrap;
+        }
+        .box-content div { margin-bottom: 4px; }
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 0.78rem;
+        }
+        th {
+          background: #f8fafc;
+          border-bottom: 1.5px solid #e2e8f0;
+          padding: 10px;
+          font-weight: 700;
+          color: #475569;
+        }
+        td {
+          padding: 10px;
+          color: #475569;
+          border-bottom: 1px solid #f1f5f9;
+          background: white;
+        }
+        
+        .controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid #e2e8f0;
+          padding-top: 20px;
+          margin-top: 20px;
+        }
+        button.btn {
+          padding: 8px 18px;
+          background: #ffffff;
+          color: #334155;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.2s;
+        }
+        button.btn:disabled {
+          background: #e2e8f0;
+          color: #94a3b8;
+          cursor: not-allowed;
+        }
+        button.btn-next {
+          background: var(--primary);
+          color: white;
+          border: none;
+        }
+        .dots {
+          display: flex;
+          gap: 8px;
+        }
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .dot.active {
+          width: 12px;
+          background: var(--primary);
+        }
+        /* Font size customization */
+        font[size="2"] { font-size: 0.8rem !important; }
+        font[size="3"] { font-size: 0.92rem !important; }
+        font[size="5"] { font-size: 1.15rem !important; }
+      </style>
+    </head>
+    <body>
+      <div class="presentation-container">
+        <div style="position: absolute; top: 15px; right: 20px; font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
+          과목: 영어 | 성취기준: [6영01-01] 간단한 단어, 어구, 문장을 듣고 강세, 리듬, 억양을 식별한다.
+        </div>
+
+        
+          <div class="slide active" id="slide-0">
+            <div class="binder-holes">
+              <div class="hole"></div>
+              <div class="hole"></div>
+              <div class="hole"></div>
+            </div>
+            <div class="slide-header">
+              <span class="badge" style="background: #fff1f2; color: #b91c1c; border: 1px solid #fecaca">
+                기초/파닉스
+              </span>
+              <span class="slide-title">단어의 소리 구조 이해를 통한 읽기 유창성 확보</span>
+            </div>
+            
+            <div class="quote-card" style="border-left: 5px solid #b91c1c">
+              <div class="quote-label">💬 단어 및 표현 읽기 지도안</div>
+              <div class="quote-content"><div>• <b>once</b> : on-ce (원스) <br>- 'o'는 '원' 소리에 가깝게, 'ce'는 '스' 소리가 납니다.</div>
+<div>• <b>twice</b> : t-wi-ce (트와이스) <br>- 't'는 ㅌ, 'wi'는 와이, 'ce'는 스 소리가 납니다.</div>
+<div>• <b>three times</b> : th-ree ti-mes (쓰리 타임즈) <br>- 'th'는 혀를 살짝 내밀어 '쓰', 'ee'는 길게 '이', 'mes'는 '므즈' 소리가 납니다.</div>
+<div>• <b>exercise</b> : ex-er-cise (엑서사이즈) <br>- 'ex'는 엑스, 'er'은 어, 'cise'는 '사이즈' 소리가 납니다.</div>
+<div>• <b>brush your teeth</b> : bru-sh your tee-th (브러쉬 유어 티쓰) <br>- 'sh'는 쉬, 'th'는 혀를 살짝 내미는 '쓰' 소리가 납니다.</div>
+<div>• <b>drink water</b> : dri-nk wa-ter (드링크 워터) <br>- 'nk'는 잉크, 'wa'는 워, 'ter'는 터 소리가 납니다.</div>
+<div>• <b>wash your hands</b> : wa-sh your ha-nds (워쉬 유어 핸즈) <br>- 'wa'는 워, 'sh'는 쉬, 'nds'는 핸즈 소리가 납니다.</div>
+<div>• <b>stay up late</b> : stay u-p la-te (스테이 업 레이트) <br>- 'ay'는 에이, 'u'는 어, 'te'는 트 소리가 납니다.</div>
+<div>• <b>eat fast food</b> : ea-t fa-st foo-d (이트 패스트 푸드) <br>- 'ea'는 길게 '이', 'st'는 스트, 'oo'는 우 소리가 납니다.</div>
+<div>• <b>healthy</b> : hea-l-thy (헬씨) <br>- 'hea'는 에, 'l'은 ㄹ, 'thy'는 혀를 살짝 내미는 '씨' 소리가 납니다.</div></div>
+            </div>
+
+            <div class="quote-card" style="border-left: 5px solid #b91c1c">
+              <div class="quote-label">💡 읽기 비계 질문 및 팁</div>
+              <div class="quote-content"><div>• <b><font color="#ef4444">파닉스 비계 질문</font></b>: "'th' 소리를 낼 때 윗니와 아랫니 사이에 혀가 살짝 닿나요? 'sh' 소리는 조용히 하라는 '쉿!' 할 때의 소리와 같나요?"</div>
+<div>• <b><font color="#ef4444">소리 분절 팁</font></b>: 긴 단어(exercise, healthy)는 음절별로 끊어서 천천히 읽어보게 유도하며, 이중모음(ea)과 이중자음(sh, th)을 시각적으로 구분하여 지도합니다.</div></div>
+            </div>
+          </div>
+          
+          <div class="slide " id="slide-1">
+            <div class="binder-holes">
+              <div class="hole"></div>
+              <div class="hole"></div>
+              <div class="hole"></div>
+            </div>
+            <div class="slide-header">
+              <span class="badge" style="background: #ecfdf5; color: #15803d; border: 1px solid #bbf7d0">
+                심화/확장
+              </span>
+              <span class="slide-title">건강 습관 실천을 위한 심화 대화 및 칭찬 표현의 확장</span>
+            </div>
+            
+            <div class="quote-card" style="border-left: 5px solid #15803d">
+              <div class="quote-label">💬 추가 관련 표현 1</div>
+              <div class="quote-content" style="font-style: normal;"><div>I want to start drinking water five times a day because it makes my skin healthy and keeps me energized at school. I think it will help me focus better during classes!</div></div>
+            </div>
+
+            <div class="grid-container" style="margin-bottom: 20px;">
+              <div class="grid-box box-2">
+                <div class="box-title title-2">📝 심화 대화문 예시</div>
+                <div class="box-content"><div>• <b>핵심 표현 리스트</b>: <font color="#10b981">How often do you ~?</font> (빈도 질문), <font color="#10b981">once/twice/three times a ~</font> (빈도 답변), <font color="#10b981">Good for you!</font> (칭찬).</div>
+<div>• <b>어휘 활용</b>: exercise, brush your teeth, drink water, wash your hands, stay up late, eat fast food 등 교과서 속 건강 습관 어휘들을 문장 성분으로 적절히 배치하는 연습이 필요합니다.</div></div>
+              </div>
+              <div class="grid-box box-3">
+                <div class="box-title title-3">🎯 핵심 표현 및 강조 어휘</div>
+                <div class="box-content"><div>• <b>질문의 구체화</b>: 단순히 빈도를 묻는 것을 넘어, <font color="#10b981">Why do you think it is good for your health?</font>와 같은 추가 질문을 통해 학생이 영어로 이유를 설명하도록 유도하세요.</div>
+<div>• <b>상위 수준 학생 지도</b>: 문법적 정확성보다 <font color="#10b981">자신의 생각을 논리적으로 연결</font>하는 '의사소통의 유창성'에 초점을 맞추어 피드백을 제공합니다.</div></div>
+              </div>
+            </div>
+
+            <div class="quote-card" style="border-left: 5px solid #15803d; margin-bottom: 15px;">
+              <div class="quote-label">💬 추가 관련 표현 2</div>
+              <div class="quote-content" style="font-style: normal;"><div>• <b>Keep it up!</b>: 상대방이 꾸준히 실천 중인 건강한 습관을 지속하도록 격려할 때 사용합니다.</div>
+<div>• <b>That's a healthy choice!</b>: 친구가 선택한 건강 습관이 긍정적임을 확인해주며 지지할 때 사용합니다.</div></div>
+            </div>
+
+            <div class="quote-card" style="border-left: 5px solid #15803d">
+              <div class="quote-label">💬 추가 관련 표현 3</div>
+              <div class="quote-content" style="font-style: normal;"><div>• <b>You're on the right track!</b>: 올바른 방향으로 건강 관리를 하고 있다는 점을 강조하여 자신감을 심어줄 때 사용합니다.</div>
+<div>• <b>That's impressive!</b>: 친구가 실천하기 어려운 습관(예: 매일 물 마시기)을 잘 지키고 있을 때 그 성실함을 극찬할 때 사용합니다.</div></div>
+            </div>
+          </div>
+          
+          <div class="slide " id="slide-2">
+            <div class="binder-holes">
+              <div class="hole"></div>
+              <div class="hole"></div>
+              <div class="hole"></div>
+            </div>
+            <div class="slide-header">
+              <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a">
+                실생활활용
+              </span>
+              <span class="slide-title">교실 내 건강 습관 조사를 통한 빈도 표현의 실생활 적용</span>
+            </div>
+            
+            <div class="quote-card" style="border-left: 5px solid #b45309">
+              <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+              <div class="quote-content"><div>A: How often do you drink water?</div><div>B: I drink water five times a day. How about you?</div><div>A: I drink it three times a day. Good for you!</div></div>
+            </div>
+
+            <div class="grid-container" style="margin-bottom: 20px;">
+              <div class="grid-box box-3">
+                <div class="box-title title-3">🩹 활용 핵심 질문</div>
+                <div class="box-content"><div>• <b>상호작용 활동</b>: 짝과 함께 <b>건강 설문지(Survey Sheet)</b>를 작성하여 우리 반의 '건강 왕'을 뽑아보기</div>
+<div>• <b>활용 핵심 질문</b>: 'How often do you ~?' 뒤에 동사구(brush teeth, wash hands 등)를 바꾸어 가며 질문 카드 돌리기</div>
+<div>• <b>피드백 루틴</b>: 상대방의 대답을 들은 후 반드시 <b>Good for you!</b> 또는 <b>That's great!</b>와 같은 격려 표현을 덧붙이도록 지도</div></div>
+              </div>
+              <div class="grid-box box-4">
+                <div class="box-title title-4">💡 다양한 실생활 예시 표현</div>
+                <div class="box-content"><div>• <b>Always</b>: 100% 빈도 (I always wash my hands before lunch.)</div>
+<div>• <b>Sometimes</b>: 가끔 하는 행동 (I sometimes take a walk with my dog.)</div>
+<div>• <b>Never</b>: 전혀 하지 않는 행동 (I never stay up late on weekdays.)</div></div>
+              </div>
+            </div>
+
+            <div class="quote-card" style="border-left: 5px solid #b45309; margin-bottom: 15px;">
+              <div class="quote-label">💬 예시 2 (쉬는 시간에 친구의 스트레칭 습관을 묻는 상황)</div>
+              <div class="quote-content"><div></div><div>A: Hey, how often do you stretch in class?</div><div>B: I stretch twice a day. It makes me feel refreshed.</div><div>A: That's great! Keep it up.</div></div>
+            </div>
+
+            <div class="quote-card" style="border-left: 5px solid #b45309">
+              <div class="quote-label">💬 예시 3 (점심시간에 식습관을 확인하는 상황)</div>
+              <div class="quote-content"><div></div><div>A: How often do you eat fast food?</div><div>B: I eat fast food once a month. I try to eat healthy.</div><div>A: Good for you! That's a very healthy habit.</div></div>
+            </div>
+          </div>
+          
+          <div class="slide " id="slide-3">
+            <div class="binder-holes">
+              <div class="hole"></div>
+              <div class="hole"></div>
+              <div class="hole"></div>
+            </div>
+            <div class="slide-header">
+              <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd">
+                핵심문법
+              </span>
+              <span class="slide-title">빈도 표현의 구조와 의문문의 원리 이해</span>
+            </div>
+            
+            <div class="quote-card" style="border-left: 5px solid #0369a1">
+              <div class="quote-label">💬 수업 중 예상 상황 (발화 예시)</div>
+              <div class="quote-content"><div>• 선생님, 'How often'은 '얼마나 자주'라는 뜻이니까 'How' 뒤에 'often'을 붙여서 물어보는 것 같아요! 그리고 물음표는 우리말이나 영어 모두 '질문할 때 끝에 찍는 것'은 똑같아요.</div></div>
+            </div>
+
+            <div class="grid-container">
+              <div class="grid-box box-1">
+                <div class="box-title title-1">📝 핵심 문법 규칙</div>
+                <div class="box-content"><div>• <b>빈도 의문문 구조</b>: <font color="#06b6d4">How often</font>은 빈도(횟수)를 묻는 하나의 덩어리로, 문장 맨 앞에 위치하여 상대방의 습관을 구체적으로 확인합니다.</div>
+<div>• <b>빈도 표현의 규칙</b>: 'once(1회)', 'twice(2회)'는 불규칙 변화를 보이며, 3회부터는 숫자 뒤에 'times'를 붙여 규칙적으로 표현함을 이해해야 합니다.</div>
+<div>• <b>문장 부호의 공통성</b>: 영어와 한국어 모두 의문문 끝에는 <font color="#06b6d4">물음표(?)</font>를 사용하여 상대방의 응답을 요구하는 문장임을 시각적으로 나타냅니다.</div></div>
+              </div>
+              <div class="grid-box box-2">
+                <div class="box-title title-2">🎯 문법적 원리 요점</div>
+                <div class="box-content"><div>• <b>의문사 확장 전략</b>: 'How'가 단순히 상태를 묻는 것뿐만 아니라 'How often', 'How old', 'How many'처럼 뒤에 단어를 붙여 질문의 범위를 좁히는 원리를 지도합니다.</div>
+<div>• <b>숫자와 횟수의 연결</b>: 학생들이 3, 4, 5 등의 숫자를 영어로 말할 수 있다면, 그 뒤에 'times'만 더하면 된다는 <font color="#06b6d4">규칙성</font>을 강조하여 학습 부담을 줄여줍니다.</div></div>
+              </div>
+              <div class="grid-box box-3">
+                <div class="box-title title-3">🩹 문법 피드백 및 유의점</div>
+                <div class="box-content"><div>• <b>흔한 오류 교정</b>: 학생들이 'How often you exercise?'처럼 조동사 <font color="#06b6d4">do</font>를 빠뜨리는 경우가 많습니다. 이때는 '의문문은 do가 대장처럼 앞으로 나온다'는 규칙을 비유적으로 설명하세요.</div>
+<div>• <b>피드백 전략</b>: 'I exercise three time a week.'라고 말할 경우, 'time'에 's'를 붙여 'times'로 고쳐주는 <font color="#06b6d4">반복적 청각 피드백</font>을 제공하세요.</div></div>
+              </div>
+              <div class="grid-box box-4">
+                <div class="box-title title-4">💡 마무리 문법 퀴즈</div>
+                <div class="box-content"><div>• <b>문법 확인 퀴즈</b>: '한 달에 두 번'을 영어로 어떻게 표현할까? (twice a month)와 같이 배운 규칙을 적용하는 1분 퀴즈를 실시합니다.</div>
+<div>• <b>메타 질문</b>: 우리가 왜 운동 횟수를 물어볼 때 'How often'이라는 특별한 단어를 쓰는지 생각해보고, 이 표현이 없을 때의 불편함을 대화로 체험해보게 합니다.</div></div>
+              </div>
+            </div>
+          </div>
+          
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <span class="slide-title">📊 한눈에 보는 교육적 관점별 설계 종합표</span>
+      </div>
+      <div style="overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px;">
+        <table>
+          <thead>
+            <tr>
+              <th>분석 영역</th>
+              <th>분석 주제</th>
+              <th>상황 반응 예시</th>
+              <th>주요 특징 요약</th>
+              <th>핵심 지도 강조점</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+      <tr>
+        <td style="font-weight: 700;">기초 읽기 및 파닉스</td>
+        <td style="font-weight: 600;">단어의 소리 구조 이해를 통한 읽기 유창성 확보</td>
+        <td style="font-style: italic;"><div>• Teacher, 'three'에서 'th' 발음은 혀를 살짝 깨무는 건가요? 'brush'는 끝에 '쉬' 소리가 나서 재미있어요!</div></td>
+        <td><div>• <b>once</b> : on-ce (원스) <br>- 'o'는 '원' 소리에 가깝게, 'ce'는 '스' 소리가 납니다.</div>
+<div>• <b>twice</b> : t-wi-ce (트와이스) <br>- 't'는 ㅌ, 'wi'는 와이, 'ce'는 스 소리가 납니다.</div>
+<div>• <b>three times</b> : th-ree ti-mes (쓰리 타임즈) <br>- 'th'는 혀를 살짝 내밀어 '쓰', 'ee'는 길게 '이', 'mes'는 '므즈' 소리가 납니다.</div>
+<div>• <b>exercise</b> : ex-er-cise (엑서사이즈) <br>- 'ex'는 엑스, 'er'은 어, 'cise'는 '사이즈' 소리가 납니다.</div>
+<div>• <b>brush your teeth</b> : bru-sh your tee-th (브러쉬 유어 티쓰) <br>- 'sh'는 쉬, 'th'는 혀를 살짝 내미는 '쓰' 소리가 납니다.</div>
+<div>• <b>drink water</b> : dri-nk wa-ter (드링크 워터) <br>- 'nk'는 잉크, 'wa'는 워, 'ter'는 터 소리가 납니다.</div>
+<div>• <b>wash your hands</b> : wa-sh your ha-nds (워쉬 유어 핸즈) <br>- 'wa'는 워, 'sh'는 쉬, 'nds'는 핸즈 소리가 납니다.</div>
+<div>• <b>stay up late</b> : stay u-p la-te (스테이 업 레이트) <br>- 'ay'는 에이, 'u'는 어, 'te'는 트 소리가 납니다.</div>
+<div>• <b>eat fast food</b> : ea-t fa-st foo-d (이트 패스트 푸드) <br>- 'ea'는 길게 '이', 'st'는 스트, 'oo'는 우 소리가 납니다.</div>
+<div>• <b>healthy</b> : hea-l-thy (헬씨) <br>- 'hea'는 에, 'l'은 ㄹ, 'thy'는 혀를 살짝 내미는 '씨' 소리가 납니다.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b><font color="#ef4444">파닉스 비계 질문</font></b>: "'th' 소리를 낼 때 윗니와 아랫니 사이에 혀가 살짝 닿나요? 'sh' 소리는 조용히 하라는 '쉿!' 할 때의 소리와 같나요?"</div>
+<div>• <b><font color="#ef4444">소리 분절 팁</font></b>: 긴 단어(exercise, healthy)는 음절별로 끊어서 천천히 읽어보게 유도하며, 이중모음(ea)과 이중자음(sh, th)을 시각적으로 구분하여 지도합니다.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">심화 대화 및 표현 확장</td>
+        <td style="font-weight: 600;">건강 습관 실천을 위한 심화 대화 및 칭찬 표현의 확장</td>
+        <td style="font-style: italic;"><div>I want to start drinking water five times a day because it makes my skin healthy and keeps me energized at school. I think it will help me focus better during classes!</div></td>
+        <td><div>• <b>핵심 표현 리스트</b>: <font color="#10b981">How often do you ~?</font> (빈도 질문), <font color="#10b981">once/twice/three times a ~</font> (빈도 답변), <font color="#10b981">Good for you!</font> (칭찬).</div>
+<div>• <b>어휘 활용</b>: exercise, brush your teeth, drink water, wash your hands, stay up late, eat fast food 등 교과서 속 건강 습관 어휘들을 문장 성분으로 적절히 배치하는 연습이 필요합니다.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>질문의 구체화</b>: 단순히 빈도를 묻는 것을 넘어, <font color="#10b981">Why do you think it is good for your health?</font>와 같은 추가 질문을 통해 학생이 영어로 이유를 설명하도록 유도하세요.</div>
+<div>• <b>상위 수준 학생 지도</b>: 문법적 정확성보다 <font color="#10b981">자신의 생각을 논리적으로 연결</font>하는 '의사소통의 유창성'에 초점을 맞추어 피드백을 제공합니다.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">실생활 일상 활용</td>
+        <td style="font-weight: 600;">교실 내 건강 습관 조사를 통한 빈도 표현의 실생활 적용</td>
+        <td style="font-style: italic;"><div>A: How often do you drink water?</div><div>B: I drink water five times a day. How about you?</div><div>A: I drink it three times a day. Good for you!</div></td>
+        <td><div>(쉬는 시간에 친구의 스트레칭 습관을 묻는 상황)</div><div>A: Hey, how often do you stretch in class?</div><div>B: I stretch twice a day. It makes me feel refreshed.</div><div>A: That's great! Keep it up.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>(점심시간에 식습관을 확인하는 상황)</div><div>A: How often do you eat fast food?</div><div>B: I eat fast food once a month. I try to eat healthy.</div><div>A: Good for you! That's a very healthy habit.</div></td>
+      </tr>
+      
+      <tr>
+        <td style="font-weight: 700;">핵심 문법 설명</td>
+        <td style="font-weight: 600;">빈도 표현의 구조와 의문문의 원리 이해</td>
+        <td style="font-style: italic;"><div>• 선생님, 'How often'은 '얼마나 자주'라는 뜻이니까 'How' 뒤에 'often'을 붙여서 물어보는 것 같아요! 그리고 물음표는 우리말이나 영어 모두 '질문할 때 끝에 찍는 것'은 똑같아요.</div></td>
+        <td><div>• <b>빈도 의문문 구조</b>: <font color="#06b6d4">How often</font>은 빈도(횟수)를 묻는 하나의 덩어리로, 문장 맨 앞에 위치하여 상대방의 습관을 구체적으로 확인합니다.</div>
+<div>• <b>빈도 표현의 규칙</b>: 'once(1회)', 'twice(2회)'는 불규칙 변화를 보이며, 3회부터는 숫자 뒤에 'times'를 붙여 규칙적으로 표현함을 이해해야 합니다.</div>
+<div>• <b>문장 부호의 공통성</b>: 영어와 한국어 모두 의문문 끝에는 <font color="#06b6d4">물음표(?)</font>를 사용하여 상대방의 응답을 요구하는 문장임을 시각적으로 나타냅니다.</div></td>
+        <td style="color: #166534; font-weight: 500;"><div>• <b>의문사 확장 전략</b>: 'How'가 단순히 상태를 묻는 것뿐만 아니라 'How often', 'How old', 'How many'처럼 뒤에 단어를 붙여 질문의 범위를 좁히는 원리를 지도합니다.</div>
+<div>• <b>숫자와 횟수의 연결</b>: 학생들이 3, 4, 5 등의 숫자를 영어로 말할 수 있다면, 그 뒤에 'times'만 더하면 된다는 <font color="#06b6d4">규칙성</font>을 강조하여 학습 부담을 줄여줍니다.</div></td>
+      </tr>
+      
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+
+        <div class="controls">
+          <button class="btn" id="prev-btn" onclick="prevSlide()" disabled>◀ 이전</button>
+          <div class="dots" id="dots-container"></div>
+          <button class="btn btn-next" id="next-btn" onclick="nextSlide()">다음 ▶</button>
+        </div>
+      </div>
+
+      <script>
+        let currentIdx = 0;
+        const totalSlides = 5;
+
+        function updateSlide() {
+          document.querySelectorAll('.slide').forEach((slide, idx) => {
+            if (idx === currentIdx) {
+              slide.classList.add('active');
+            } else {
+              slide.classList.remove('active');
+            }
+          });
+
+          document.getElementById('prev-btn').disabled = currentIdx === 0;
+          
+          const nextBtn = document.getElementById('next-btn');
+          if (currentIdx === totalSlides - 1) {
+            nextBtn.textContent = '종료';
+          } else {
+            nextBtn.textContent = '다음 ▶';
+          }
+
+          document.querySelectorAll('.dot').forEach((dot, idx) => {
+            if (idx === currentIdx) {
+              dot.classList.add('active');
+            } else {
+              dot.classList.remove('active');
+            }
+          });
+        }
+
+        function nextSlide() {
+          if (currentIdx < totalSlides - 1) {
+            currentIdx++;
+            updateSlide();
+          } else {
+            alert('수업 설계 리포트 뷰어가 종료되었습니다.');
+          }
+        }
+
+        function prevSlide() {
+          if (currentIdx > 0) {
+            currentIdx--;
+            updateSlide();
+          }
+        }
+
+        // Generate Dots
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 0; i < totalSlides; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'dot' + (i === 0 ? ' active' : '');
+          dot.onclick = () => { currentIdx = i; updateSlide(); };
+          dotsContainer.appendChild(dot);
+        }
+      </script>
+    </body>
+    </html>
+    
